@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 4.0)
 project(model-matrix)
 set(CMAKE_CXX_STANDARD 20)
 
-# Check which platform we're building for
+# Check which platform we're building for, include appropriate directories
 if(APPLE)
     message("Configuring CMake for OSX!")
     include_directories(
@@ -40,7 +40,9 @@ elseif(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
-# Group all sources and headers
+
+
+# Group all application sources and headers
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h src/*.hpp)
 
@@ -48,15 +50,21 @@ file(GLOB_RECURSE HEADERS src/*.h src/*.hpp)
 # Create executable with all sources and headers
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
-# TODO: link imgui libs
+# build imgui library
+add_library(ImGui STATIC
+        ./external/imgui-1.92.1-docking/imgui.cpp
+        ./external/imgui-1.92.1-docking/imgui_draw.cpp
+        ./external/imgui-1.92.1-docking/imgui_demo.cpp
+        ./external/imgui-1.92.1-docking/imgui_widgets.cpp
+        ./external/imgui-1.92.1-docking/imgui_tables.cpp
+        ./external/rlImGui/rlImGui.cpp
+)
 
-
-# Explicitly link win multimedia if building for win32
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} raylib Winmm)
-else ()
-    target_link_libraries(${PROJECT_NAME} raylib)
-endif ()
+# Link pre-built raylib and build ImGui libraries
+target_link_libraries(${PROJECT_NAME} PRIVATE
+        raylib
+        ImGui
+)
 
 
 # Set compile flags for WASM target during program linkage
