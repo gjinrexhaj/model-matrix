@@ -5,31 +5,35 @@ set(CMAKE_CXX_STANDARD 20)
 
 # Check which platform we're building for
 if(APPLE)
-    message("Building on OSX!")
+    message("Configuring CMake for OSX!")
     include_directories(
             "./external/raylib-5.5_macos/include"
             "./external/rlImGui"
+            "./external/imgui-1.92.1-docking/"
     )
     link_directories("./external/raylib-5.5_macos/lib")
 elseif(WIN32)
-    message("Building on Windows!")
+    message("Configuring CMake for Windows!")
     include_directories(
             "./external/raylib-5.5_win64_msvc16/include"
             "./external/rlImGui"
+            "./external/imgui-1.92.1-docking/"
     )
     link_directories("./external/raylib-5.5_win64_msvc16/lib")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message("Building on Linux!")
+    message("Configuring CMake for Linux!")
     include_directories(
             "./external/raylib-5.5_linux_amd64/include"
             "./external/rlImGui"
+            "./external/imgui-1.92.1-docking/"
     )
     link_directories("./external/raylib-5.5_linux_amd64/lib")
 elseif(EMSCRIPTEN)
-    message("Building for WASM")
+    message("Configuring CMake for WASM")
     include_directories(
             "./external/raylib-5.5_webassembly/include"
             "./external/rlImGui"
+            "./external/imgui-1.92.1-docking/"
     )
     link_directories("./external/raylib-5.5_webassembly/lib")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -s ASYNCIFY -s GL_ENABLE_GET_PROC_ADDRESS=1")
