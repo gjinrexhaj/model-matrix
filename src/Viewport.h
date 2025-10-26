@@ -24,6 +24,8 @@ class Viewport
 
         void Show()
         {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
             if (ImGui::Begin("3D Viewport", &open, ImGuiWindowFlags_NoScrollbar))
             {
                 focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
@@ -35,6 +37,8 @@ class Viewport
                 ImGui::Text(camPosText.c_str());
                 ImGui::Text(isFocusedLabel.c_str());
             }
+
+            ImGui::PopStyleVar();
             ImGui::End();
         }
 
