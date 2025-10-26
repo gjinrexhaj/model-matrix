@@ -10,6 +10,3 @@ class Application
 {
 
 };
-
-
-#endif //MODEL_MATRIX_APPLICATION_H
