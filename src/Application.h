@@ -4,7 +4,6 @@
 //
 
 #pragma once
-#include <imgui.h>
 
 class Application
 {
