@@ -3,6 +3,8 @@
 //
 
 #include "Application.h"
+#include  "Viewport.h"
+
 
 class ModelMatrixApp final : public Application
 {
@@ -13,12 +15,16 @@ class ModelMatrixApp final : public Application
         // Initialize app and state
         void startUp() override
         {
-            // apply theming, fonts, config flags, and update state
+            // Apply theming, fonts, config flags, and update state
             SetTargetFPS(144);
             rlImGuiSetup(true);
 
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+            ViewTexture = LoadRenderTexture(windowWidth, windowHeight);
+
+            // Start up viewport
+            viewportWindow.Setup();
         }
 
         // User interface code here
@@ -28,11 +34,21 @@ class ModelMatrixApp final : public Application
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
             // example ui
             ImGui::ShowDemoWindow();
+            // 3d viewport window
+            viewportWindow.Update();
+            if (showViewport)
+            {
+                viewportWindow.Show();
+            }
+
         }
 
     // Every var in private represents state
     private:
         int someNumber = 5;
+        RenderTexture ViewTexture;
+        bool showViewport = true;
+        Viewport viewportWindow;
 };
 
 
