@@ -32,7 +32,7 @@ class Viewport
                 // draw the view
                 rlImGuiImageRenderTextureFit(&ViewTexture, true);
                 std::string camPosText = "Camera Position [" + std::to_string(camera.position.x) + ", " + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
-                std::string isFocusedLabel = "Focused: " + std::to_string(focused);
+                std::string isFocusedLabel = "Window focus: " + std::to_string(focused);
 
                 ImGui::Text(camPosText.c_str());
                 ImGui::Text(isFocusedLabel.c_str());
