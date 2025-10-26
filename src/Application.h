@@ -20,9 +20,7 @@ class Application
             // Initialize ImGui + rlImGui
             IMGUI_CHECKVERSION();
             SetConfigFlags(FLAG_MSAA_4X_HINT | FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
-            InitWindow(windowWidth, windowHeight, "raylib-Extras [ImGui] example - simple ImGui Demo");
-            SetTargetFPS(144);
-            rlImGuiSetup(true);
+            InitWindow(windowWidth, windowHeight, windowTitle.c_str());
         }
 
         virtual ~Application()

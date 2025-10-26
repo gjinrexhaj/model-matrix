@@ -14,6 +14,9 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // apply theming, fonts, config flags, and update state
+            SetTargetFPS(144);
+            rlImGuiSetup(true);
+
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         }
@@ -23,6 +26,7 @@ class ModelMatrixApp final : public Application
         {
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+            // example ui
             ImGui::ShowDemoWindow();
         }
 
