@@ -45,9 +45,10 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h src/*.hpp)
 
 
-# Add sources to executable
+# Create executable with all sources and headers
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
+# TODO: link imgui libs
 
 
 # Explicitly link win multimedia if building for win32
