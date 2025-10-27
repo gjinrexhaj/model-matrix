@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include "raylib.h"
 #include "imgui.h"
 #include "rlImGui.h"
@@ -12,9 +14,21 @@
 class Viewport
 {
     public:
+        float orbitRadius = 10.0f;
+        int viewportWidth = 800;
+        int viewportHeight = 800;
+
+        // TODO: implement window position and size vars
+        int windowX;
+        int windowY;
+        int windowWidth;
+        int windowHeight;
+        bool viewportHovered;
+
+
         void Setup()
         {
-            ViewTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+            ViewTexture = LoadRenderTexture(viewportWidth, viewportHeight);
 
             camera.fovy = 45;
             camera.up.y = 1;
@@ -28,14 +42,37 @@ class Viewport
 
             if (ImGui::Begin("3D Viewport", &open, ImGuiWindowFlags_NoScrollbar))
             {
+                // Update window data
+                ImVec2 windowCoords = ImGui::GetWindowPos();
+                windowX = windowCoords.x;
+                windowY = windowCoords.y;
+
+                ImVec2 windowSize = ImGui::GetWindowSize();
+                windowWidth = windowSize.x;
+                windowHeight = windowSize.y;
+
+
                 focused = ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows);
-                // draw the view
+
+                // draw the viewport
                 rlImGuiImageRenderTextureFit(&ViewTexture, true);
-                std::string camPosText = "Camera Position [" + std::to_string(camera.position.x) + ", " + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
-                std::string isFocusedLabel = "Window focus: " + std::to_string(focused);
+                viewportHovered = ImGui::IsItemHovered();
+
+                // Debug data labels
+                std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", " + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
+                std::string isFocusedLabel = " Window focus: " + std::to_string(focused);
+                std::string resolutionLabel = " Window resolution: [" + std::to_string(viewportWidth) + ", " + std::to_string(viewportHeight) + "]";
+                std::string windowPositionLabel = " Window position: [" + std::to_string(windowX) + ", " + std::to_string(windowY) + "]";
+                std::string windowSizeLabel = " Window size: [" + std::to_string(windowWidth) + ", " + std::to_string(windowHeight) + "]";
+                std::string viewPortHoveredLabel = " ViewPort hovered: " + std::to_string(viewportHovered);
 
                 ImGui::Text(camPosText.c_str());
                 ImGui::Text(isFocusedLabel.c_str());
+                ImGui::Text(resolutionLabel.c_str());
+                ImGui::Text(windowPositionLabel.c_str());
+                ImGui::Text(windowSizeLabel.c_str());
+                ImGui::Text(viewPortHoveredLabel.c_str());
+
             }
 
             ImGui::PopStyleVar();
@@ -44,17 +81,44 @@ class Viewport
 
         void Update()
         {
+
             if (!open)
             {
                 return;
             }
 
-            // TODO: add camera controls; check if focused
+            // TODO: add camera controls;
+            if (focused && viewportHovered)
+            {
+                if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+                {
+                    if (firstClick)
+                    {
+                        std::cout<<"first click"<<std::endl;
+                        HideCursor();
+                    } else
+                    {
+                        std::cout<<"mouse down"<< std::endl;
+                        SetMousePosition(windowX + windowWidth/2, windowY + windowHeight/2);
+                        HideCursor();
+                    }
+
+                    firstClick = false;
+                } else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+                {
+                    firstClick = true;
+                    std::cout<<"mouse released"<< std::endl;
+                    ShowCursor();
+                }
+            } else if (IsCursorHidden())
+            {
+                ShowCursor();
+            }
 
             if (IsWindowResized())
             {
                 UnloadRenderTexture(ViewTexture);
-                ViewTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+                ViewTexture = LoadRenderTexture(viewportWidth, viewportHeight);
             }
 
             BeginTextureMode(ViewTexture);
@@ -97,4 +161,5 @@ class Viewport
         bool open = true;
         bool focused = false;
         Camera3D camera = {};
+        bool firstClick = true;
 };

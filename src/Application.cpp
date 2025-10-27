@@ -22,6 +22,7 @@ class ModelMatrixApp final : public Application
             ImGuiIO& io = ImGui::GetIO();
             io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
             ViewTexture = LoadRenderTexture(windowWidth, windowHeight);
+            io.ConfigWindowsMoveFromTitleBarOnly = true;
 
             // Start up viewport
             viewportWindow.Setup();
