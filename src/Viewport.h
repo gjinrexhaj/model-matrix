@@ -148,7 +148,6 @@ class Viewport
 
         void HandleCameraControls()
         {
-            std::cout<<"handle camera controls"<<std::endl;
             camera.position += Vector3(0, 1, 0);
 
             Vector2 mouseDelta = GetMouseDelta();
