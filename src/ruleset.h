@@ -19,5 +19,7 @@ class Ruleset
         int numStates;
         NeighborCountingRule neighborCountingRule;
 
-        Ruleset(int survivalCondition, int birthCondition, int numStates, NeighborCountingRule neighborCountingRule);
+        Ruleset(int survivalCondition, int birthCondition, int numStates, NeighborCountingRule neighborCountingRule) :
+            survivalCondition(survivalCondition), birthCondition(birthCondition),
+            numStates(numStates), neighborCountingRule(neighborCountingRule) {};
 };
