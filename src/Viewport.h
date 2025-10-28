@@ -15,25 +15,27 @@ class Viewport
 {
     public:
         float orbitRadius = 10.0f;
-        int viewportWidth = 800;
-        int viewportHeight = 800;
-
-        // TODO: implement window position and size vars
-        int windowX;
-        int windowY;
-        int windowWidth;
-        int windowHeight;
-        bool viewportHovered;
-
+        Vector2 viewportResolution = {800,800};
+        int radius = 10;
+        int cameraFov;
+        float panSensitivity;
+        int scrollSpeed;
 
         void Setup()
         {
-            ViewTexture = LoadRenderTexture(viewportWidth, viewportHeight);
+            ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
 
             camera.fovy = 45;
-            camera.up.y = 1;
-            camera.position.y = 3;
-            camera.position.z = -25;
+            camera.projection = CAMERA_PERSPECTIVE;
+            camera.position = {0.0f, 10.0f, 10.0f};
+            camera.target = {0.0f, 0.0f, 0.0f};
+            camera.up = {0.0f, 1.0f, 0.0f};
+
+            angleX = 0;
+            angleY = 0;
+            panSensitivity = 0.005f;
+
+            UpdateCameraState();
         }
 
         void Show()
@@ -59,9 +61,10 @@ class Viewport
                 viewportHovered = ImGui::IsItemHovered();
 
                 // Debug data labels
+                ImGui::BeginChild("Debug");
                 std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", " + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
                 std::string isFocusedLabel = " Window focus: " + std::to_string(focused);
-                std::string resolutionLabel = " Window resolution: [" + std::to_string(viewportWidth) + ", " + std::to_string(viewportHeight) + "]";
+                std::string resolutionLabel = " Viewport resolution: [" + std::to_string(viewportResolution.x) + ", " + std::to_string(viewportResolution.y) + "]";
                 std::string windowPositionLabel = " Window position: [" + std::to_string(windowX) + ", " + std::to_string(windowY) + "]";
                 std::string windowSizeLabel = " Window size: [" + std::to_string(windowWidth) + ", " + std::to_string(windowHeight) + "]";
                 std::string viewPortHoveredLabel = " ViewPort hovered: " + std::to_string(viewportHovered);
@@ -72,6 +75,7 @@ class Viewport
                 ImGui::Text(windowPositionLabel.c_str());
                 ImGui::Text(windowSizeLabel.c_str());
                 ImGui::Text(viewPortHoveredLabel.c_str());
+                ImGui::EndChild();
 
             }
 
@@ -87,29 +91,32 @@ class Viewport
                 return;
             }
 
-            // TODO: add camera controls;
+            // Control camera on viewport grab focus, hide mouse + return to center when let go
             if (focused && viewportHovered)
             {
+                radius -= static_cast<int>(GetMouseWheelMove() * scrollSpeed);
+
                 if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
                 {
                     if (firstClick)
                     {
-                        std::cout<<"first click"<<std::endl;
                         HideCursor();
                     } else
                     {
-                        std::cout<<"mouse down"<< std::endl;
-                        SetMousePosition(windowX + windowWidth/2, windowY + windowHeight/2);
                         HideCursor();
+                        // Handle camera controls
+                        HandleCameraControls();
+                        SetMousePosition(windowX + windowWidth/2, windowY + windowHeight/2);
                     }
-
                     firstClick = false;
                 } else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
                 {
                     firstClick = true;
-                    std::cout<<"mouse released"<< std::endl;
                     ShowCursor();
                 }
+
+                UpdateCameraState();
+
             } else if (IsCursorHidden())
             {
                 ShowCursor();
@@ -118,18 +125,55 @@ class Viewport
             if (IsWindowResized())
             {
                 UnloadRenderTexture(ViewTexture);
-                ViewTexture = LoadRenderTexture(viewportWidth, viewportHeight);
+                ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
             }
 
             BeginTextureMode(ViewTexture);
             ClearBackground(SKYBLUE);
-
             BeginMode3D(camera);
 
             // Begin draw model code
+            RenderToViewport();
+            // End draw model code
+
+            EndMode3D();
+            EndTextureMode();
+        }
+
+        void ShutDown()
+        {
+            UnloadRenderTexture(ViewTexture);;
+        }
+
+
+        void HandleCameraControls()
+        {
+            std::cout<<"handle camera controls"<<std::endl;
+            camera.position += Vector3(0, 1, 0);
+
+            Vector2 mouseDelta = GetMouseDelta();
+            angleX += mouseDelta.x * panSensitivity; // Adjust sensitivity
+            angleY += mouseDelta.y * panSensitivity; // Adjust sensitivity
+
+            // Clamp vertical angle to prevent flipping
+            if (angleY > PI / 2.0f - 0.1f) angleY = PI / 2.0f - 0.1f;
+            if (angleY < -PI / 2.0f + 0.1f) angleY = -PI / 2.0f + 0.1f;
+        }
+
+        void UpdateCameraState()
+        {
+            camera.position.x = radius * cosf(angleX) * cosf(angleY);
+            camera.position.y = radius * sinf(angleY);
+            camera.position.z = radius * sinf(angleX) * cosf(angleY);
+        }
+
+        void RenderToViewport()
+        {
             DrawPlane(Vector3{ 0, 0, 0 }, Vector2{ 50, 50 }, BEIGE);
             float spacing = 4;
             int count = 5;
+
+            DrawText("hello lol", 0,0, 12, WHITE);
 
             for (float x = -count * spacing; x <= count * spacing; x += spacing)
             {
@@ -144,15 +188,6 @@ class Viewport
                     DrawCube(Vector3{ x, 0.5f, z }, 0.25f, 1, 0.25f, BROWN);
                 }
             }
-            // End draw model code
-
-            EndMode3D();
-            EndTextureMode();
-        }
-
-        void ShutDown()
-        {
-            UnloadRenderTexture(ViewTexture);;
         }
 
 
@@ -162,4 +197,11 @@ class Viewport
         bool focused = false;
         Camera3D camera = {};
         bool firstClick = true;
+        float angleX = 0;
+        float angleY = 0;
+        int windowX;
+        int windowY;
+        int windowWidth;
+        int windowHeight;
+        bool viewportHovered;
 };
