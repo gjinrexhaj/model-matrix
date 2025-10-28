@@ -97,6 +97,11 @@ class Viewport
             {
                 radius -= static_cast<int>(GetMouseWheelMove() * scrollSpeed);
 
+                if (radius < 1)
+                {
+                    radius = 1;
+                }
+
                 if (IsMouseButtonDown(MOUSE_BUTTON_LEFT))
                 {
                     if (firstClick)
@@ -151,6 +156,7 @@ class Viewport
         {
             camera.position += Vector3(0, 1, 0);
 
+            // Only control camera if it isn't at the origin
             Vector2 mouseDelta = GetMouseDelta();
             angleX += mouseDelta.x * panSensitivity; // Adjust sensitivity
             angleY += mouseDelta.y * panSensitivity; // Adjust sensitivity
@@ -158,6 +164,7 @@ class Viewport
             // Clamp vertical angle to prevent flipping
             if (angleY > PI / 2.0f - 0.1f) angleY = PI / 2.0f - 0.1f;
             if (angleY < -PI / 2.0f + 0.1f) angleY = -PI / 2.0f + 0.1f;
+
         }
 
         void UpdateCameraState()
