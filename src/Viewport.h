@@ -34,6 +34,7 @@ class Viewport
             angleX = 0;
             angleY = 0;
             panSensitivity = 0.005f;
+            scrollSpeed = 4;
 
             UpdateCameraState();
         }
