@@ -80,7 +80,7 @@ void Simulation::LogSimulationState()
     // print stateColors
     std::cout<<"activeStateColors: ";
     for (const Color col : activeStateColors) {
-        std::cout << "[R: " << col.r << " G: " << col.g << " B: " << col.b << "A: " << col.a << "] ";
+        std::cout << "[R: " << (int)col.r << " G: " << (int)col.g << " B: " << (int)col.b << " A: " << (int)col.a << "] ";
     }
     std::cout << std::endl;
     // print ruleset
