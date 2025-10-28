@@ -63,11 +63,15 @@ class Viewport
 
                 // Debug data labels
                 ImGui::BeginChild("Debug");
-                std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", " + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
+                std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", "
+                    + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
                 std::string isFocusedLabel = " Window focus: " + std::to_string(focused);
-                std::string resolutionLabel = " Viewport resolution: [" + std::to_string(viewportResolution.x) + ", " + std::to_string(viewportResolution.y) + "]";
-                std::string windowPositionLabel = " Window position: [" + std::to_string(windowX) + ", " + std::to_string(windowY) + "]";
-                std::string windowSizeLabel = " Window size: [" + std::to_string(windowWidth) + ", " + std::to_string(windowHeight) + "]";
+                std::string resolutionLabel = " Viewport resolution: [" + std::to_string(viewportResolution.x) + ", "
+                    + std::to_string(viewportResolution.y) + "]";
+                std::string windowPositionLabel = " Window position: [" + std::to_string(windowX) + ", "
+                    + std::to_string(windowY) + "]";
+                std::string windowSizeLabel = " Window size: [" + std::to_string(windowWidth) + ", "
+                    + std::to_string(windowHeight) + "]";
                 std::string viewPortHoveredLabel = " ViewPort hovered: " + std::to_string(viewportHovered);
 
                 ImGui::Text(camPosText.c_str());
@@ -179,6 +183,7 @@ class Viewport
             // TODO: right now all this method does is create a demo scene. Integrate with simulation drawing once
             //  it's been implemented
             int cubeSize = 1;
+
 
             DrawCube(Vector3{0,0,0}, cubeSize, cubeSize, cubeSize, WHITE);
             DrawCube(Vector3{1,0,0}, cubeSize, cubeSize, cubeSize, GRAY);
