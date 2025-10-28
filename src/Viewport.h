@@ -15,7 +15,7 @@ class Viewport
 {
     public:
         float orbitRadius = 10.0f;
-        Vector2 viewportResolution = {800,800};
+        Vector2 viewportResolution = {1600,1600};
         int radius = 10;
         int cameraFov;
         float panSensitivity;
@@ -169,8 +169,16 @@ class Viewport
 
         void RenderToViewport()
         {
+            // TODO: right now all this method does is create a demo scene. Integrate with simulation drawing once
+            //  it's been implemented
+            int cubeSize = 1;
+
+            DrawCube(Vector3{0,0,0}, cubeSize, cubeSize, cubeSize, WHITE);
+            DrawCube(Vector3{1,0,0}, cubeSize, cubeSize, cubeSize, GRAY);
+            DrawCube(Vector3{0,1,0}, cubeSize, cubeSize, cubeSize, BLUE);
+            DrawCube(Vector3{-1,0,0}, cubeSize, cubeSize, cubeSize, GREEN);
             DrawPlane(Vector3{ 0, 0, 0 }, Vector2{ 50, 50 }, BEIGE);
-            float spacing = 4;
+            float spacing = 5;
             int count = 5;
 
             DrawText("hello lol", 0,0, 12, WHITE);
