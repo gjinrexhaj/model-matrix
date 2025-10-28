@@ -12,10 +12,10 @@
 class Simulation
 {
     public:
-        /* Constructor */
+        // Constructor
         Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors);
 
-       /* public methods */
+        // public methods
         void ChangeRuleset(std::string newRuleset);
         void ChangeStateColors(std::pmr::vector<Color> newStateColors);
         std::string GetRulesetAsString();
@@ -28,10 +28,10 @@ class Simulation
         void LogSimulationState();
 
     private:
-        /* private variables - initialized by constructor */
-        int activeSimulationSpan; // How many cells the simulation space can fit vertically and horizontally
+        // private variables - initialized by constructor
+        int activeSimulationSpan = {}; // How many cells the simulation space can fit vertically and horizontally
         std::pmr::vector<Color> activeStateColors;
-        Ruleset activeRuleset;
+        Ruleset activeRuleset = {4,4,4, NeighborCountingRule::MOORE};
         bool running = false;
 
 };
