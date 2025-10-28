@@ -7,7 +7,7 @@
 #include <iostream>
 #include <ostream>
 
-// TODO: test if class works as expected, using logging
+// TODO: test if class works using test-harness
 // TODO: impl change ruleset parameter given a string
 // TODO: impl get ruleset as string
 // TODO: impl change state colors
