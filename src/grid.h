@@ -21,7 +21,7 @@ class Grid
 
         int read(int xIndex, int yIndex, int zIndex)
         {
-            return getIndex(xIndex, yIndex, zIndex);
+            return data[getIndex(xIndex, yIndex, zIndex)];
         }
 
         void write(int xIndex, int yIndex, int zIndex, int state)
