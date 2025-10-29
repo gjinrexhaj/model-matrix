@@ -7,13 +7,17 @@
 
 #include "raylib.h"
 #include "ruleset.h"
+#include "grid.h"
 
+// TODO: impl update and draw simulation methods once grid is fully figured out
 
 class Simulation
 {
     public:
         // Constructor
-        Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors);
+        Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors) :
+            activeSimulationSpan(simulationSpan), activeRuleset(ruleset),
+            activeStateColors(stateColors), activeGrid(simulationSpan, simulationSpan, simulationSpan) {};
 
         // public methods
         void ChangeRuleset(std::string newRuleset);
@@ -29,9 +33,10 @@ class Simulation
 
     private:
         // private variables - initialized by constructor
-        int activeSimulationSpan = {}; // How many cells the simulation space can fit vertically and horizontally
+        int activeSimulationSpan; // How many cells the simulation space can fit vertically and horizontally
         std::pmr::vector<Color> activeStateColors;
-        Ruleset activeRuleset = {4,4,4, NeighborCountingRule::MOORE};
+        Ruleset activeRuleset;
         bool running = false;
+        Grid activeGrid;
 
 };

@@ -14,13 +14,6 @@
 // TODO: impl grid to be used in sim
 
 
-Simulation::Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors)
-{
-    activeSimulationSpan = simulationSpan;
-    activeRuleset = ruleset;
-    activeStateColors = stateColors;
-}
-
 
 void Simulation::ChangeRuleset(std::string newRuleset)
 {
