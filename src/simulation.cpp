@@ -40,11 +40,40 @@ void Simulation::CountLiveNeighbors()
 void Simulation::UpdateSimulationState()
 {
     std::cout<<"Updating simulation state"<<std::endl;
+    // for now, just fill with black cube
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                if (true)
+                {
+                    activeGrid.write(x,y,z, 1);
+                }
+            }
+        }
+    }
 }
 
 void Simulation::DrawSimulationState()
 {
     std::cout<<"Drawing simulation state"<<std::endl;
+
+    // Center middle-most cube
+
+    // Iterate through grid DS and draw the state
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x)
+            {
+                // Access using coordinates, draw if state > 0
+                if (activeGrid.read(x,y,z) > 0)
+                {
+                    DrawCube(Vector3(x,y,z), 1,1,1,BLACK);
+                }
+                // std::cout << "Value at (" << x << ", " << y << ", " << z << "): "
+                //           << grid(x, y, z) << std::endl;
+            }
+        }
+    }
 }
 
 bool Simulation::IsSimulationRunning()

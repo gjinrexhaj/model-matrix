@@ -9,6 +9,8 @@
 #include "raylib.h"
 #include "imgui.h"
 #include "rlImGui.h"
+#include "ruleset.h"
+#include "simulation.h"
 #include "Viewport.h"
 
 class Viewport
@@ -21,16 +23,25 @@ class Viewport
         float panSensitivity;
         int scrollSpeed;
 
-        void Setup()
-        {
-            ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
+        // temp values for initialization
+        Ruleset viewportRuleset = Ruleset(1,1,1,NeighborCountingRule::MOORE);
+        std::pmr::vector<Color> viewportColors;
+        Simulation viewportSimulation = Simulation(1, viewportRuleset, viewportColors);
 
+        void Setup(Simulation& simulation, Ruleset& ruleset, std::pmr::vector<Color>& colors)
+        {
+            // Load ruleset, colors, and sim from app
+            viewportRuleset = ruleset;
+            viewportSimulation = simulation;
+            viewportColors = colors;
+
+            // Viewport + camera setup
+            ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
             camera.fovy = 45;
             camera.projection = CAMERA_PERSPECTIVE;
             camera.position = {0.0f, 10.0f, 10.0f};
             camera.target = {0.0f, 0.0f, 0.0f};
             camera.up = {0.0f, 1.0f, 0.0f};
-
             angleX = 0;
             angleY = 0;
             panSensitivity = 0.005f;
@@ -88,8 +99,11 @@ class Viewport
             ImGui::End();
         }
 
-        void Update()
+        void Update(Simulation& simulation, Ruleset& ruleset, std::pmr::vector<Color>& colors)
         {
+            viewportSimulation = simulation;
+            viewportRuleset = ruleset;
+            viewportColors = colors;
 
             if (!open)
             {
@@ -182,19 +196,23 @@ class Viewport
         {
             // TODO: right now all this method does is create a demo scene. Integrate with simulation drawing once
             //  it's been implemented
-            int cubeSize = 1;
+            viewportSimulation.DrawSimulationState();
+
+            /*int cubeSize = 1;
 
 
             DrawCube(Vector3{0,0,0}, cubeSize, cubeSize, cubeSize, WHITE);
             DrawCube(Vector3{1,0,0}, cubeSize, cubeSize, cubeSize, GRAY);
             DrawCube(Vector3{0,1,0}, cubeSize, cubeSize, cubeSize, BLUE);
             DrawCube(Vector3{-1,0,0}, cubeSize, cubeSize, cubeSize, GREEN);
+            DrawCube(Vector3{0,-1,0}, cubeSize, cubeSize, cubeSize, RED);
             DrawPlane(Vector3{ 0, 0, 0 }, Vector2{ 50, 50 }, BEIGE);
             float spacing = 5;
             int count = 5;
 
             DrawText("hello lol", 0,0, 12, WHITE);
 
+            /*
             for (float x = -count * spacing; x <= count * spacing; x += spacing)
             {
                 for (float z = -count * spacing; z <= count * spacing; z += spacing)
@@ -208,6 +226,7 @@ class Viewport
                     DrawCube(Vector3{ x, 0.5f, z }, 0.25f, 1, 0.25f, BROWN);
                 }
             }
+            */
         }
 
 
