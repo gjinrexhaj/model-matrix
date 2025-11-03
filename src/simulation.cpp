@@ -7,11 +7,12 @@
 #include <iostream>
 #include <ostream>
 
+#include "raymath.h"
+
 // TODO: test if class works using test-harness
 // TODO: impl change ruleset parameter given a string
 // TODO: impl get ruleset as string
 // TODO: impl change state colors
-// TODO: impl grid to be used in sim
 
 
 
@@ -34,6 +35,7 @@ std::string Simulation::GetRulesetAsString()
 
 void Simulation::CountLiveNeighbors()
 {
+    // TODO: imple count live neighbors for moore and von neumann
     std::cout<<"Counting live neighbors"<<std::endl;
 }
 
@@ -41,13 +43,11 @@ void Simulation::UpdateSimulationState()
 {
     std::cout<<"Updating simulation state"<<std::endl;
     // for now, just fill with black cube
+    // TODO: impl drawing with appropriate ruleset, colors, etc.
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
-                if (true)
-                {
-                    activeGrid.write(x,y,z, 1);
-                }
+                activeGrid.write(x,y,z, 1);
             }
         }
     }
@@ -58,6 +58,18 @@ void Simulation::DrawSimulationState()
     std::cout<<"Drawing simulation state"<<std::endl;
 
     // Center middle-most cube
+    int rc = activeSimulationSpan/2;
+    Vector3 translation3DOffset;
+    if (activeSimulationSpan % 2)
+    {
+        translation3DOffset = Vector3(-rc, -rc, -rc);
+    } else
+    {
+        translation3DOffset = Vector3(-rc + 0.5, -rc + 0.5, -rc + 0.5);
+    }
+
+    // Draw bounding-box
+    DrawCubeWiresV(Vector3(0,0,0), Vector3(activeSimulationSpan, activeSimulationSpan, activeSimulationSpan),WHITE);
 
     // Iterate through grid DS and draw the state
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
@@ -67,10 +79,8 @@ void Simulation::DrawSimulationState()
                 // Access using coordinates, draw if state > 0
                 if (activeGrid.read(x,y,z) > 0)
                 {
-                    DrawCube(Vector3(x,y,z), 1,1,1,BLACK);
+                    DrawCube(Vector3Add(translation3DOffset,Vector3(x,y,z)), 1,1,1,BLACK);
                 }
-                // std::cout << "Value at (" << x << ", " << y << ", " << z << "): "
-                //           << grid(x, y, z) << std::endl;
             }
         }
     }
