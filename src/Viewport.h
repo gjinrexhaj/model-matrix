@@ -194,39 +194,7 @@ class Viewport
 
         void RenderToViewport()
         {
-            // TODO: right now all this method does is create a demo scene. Integrate with simulation drawing once
-            //  it's been implemented
             viewportSimulation.DrawSimulationState();
-
-            /*int cubeSize = 1;
-
-
-            DrawCube(Vector3{0,0,0}, cubeSize, cubeSize, cubeSize, WHITE);
-            DrawCube(Vector3{1,0,0}, cubeSize, cubeSize, cubeSize, GRAY);
-            DrawCube(Vector3{0,1,0}, cubeSize, cubeSize, cubeSize, BLUE);
-            DrawCube(Vector3{-1,0,0}, cubeSize, cubeSize, cubeSize, GREEN);
-            DrawCube(Vector3{0,-1,0}, cubeSize, cubeSize, cubeSize, RED);
-            DrawPlane(Vector3{ 0, 0, 0 }, Vector2{ 50, 50 }, BEIGE);
-            float spacing = 5;
-            int count = 5;
-
-            DrawText("hello lol", 0,0, 12, WHITE);
-
-            /*
-            for (float x = -count * spacing; x <= count * spacing; x += spacing)
-            {
-                for (float z = -count * spacing; z <= count * spacing; z += spacing)
-                {
-                    Vector3 pos = { x, 0.5f, z };
-
-                    Vector3 min = { x - 0.5f,0,z - 0.5f };
-                    Vector3 max = { x + 0.5f,1,z + 0.5f };
-
-                    DrawCube(Vector3{ x, 1.5f, z }, 1, 1, 1, GREEN);
-                    DrawCube(Vector3{ x, 0.5f, z }, 0.25f, 1, 0.25f, BROWN);
-                }
-            }
-            */
         }
 
 
