@@ -153,7 +153,7 @@ class Viewport
             }
 
             BeginTextureMode(ViewTexture);
-            ClearBackground(SKYBLUE);
+            ClearBackground(DARKGRAY);
             BeginMode3D(camera);
 
             // Begin draw model code
