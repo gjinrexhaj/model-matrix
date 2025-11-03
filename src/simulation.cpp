@@ -9,10 +9,11 @@
 
 #include "raymath.h"
 
-// TODO: test if class works using test-harness
+
 // TODO: impl change ruleset parameter given a string
 // TODO: impl get ruleset as string
-// TODO: impl change state colors
+// TODO: impl update grid state in accordance with ruleset
+// TODO: impl draw grid state in accordance with activeColors
 
 
 
