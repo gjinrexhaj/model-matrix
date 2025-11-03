@@ -14,6 +14,7 @@
 // TODO: impl get ruleset as string
 // TODO: impl update grid state in accordance with ruleset
 // TODO: impl draw grid state in accordance with activeColors
+// TODO: make bounding box have thicker lines
 
 
 
