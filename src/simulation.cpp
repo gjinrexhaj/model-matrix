@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <random>
 
 #include "raymath.h"
 
@@ -39,6 +40,62 @@ void Simulation::CountLiveNeighbors()
 {
     // TODO: imple count live neighbors for moore and von neumann
     std::cout<<"Counting live neighbors"<<std::endl;
+
+    int liveNeighbors = 0;
+    std::vector<std::tuple<int, int, int>> neighborOffsets;
+
+    //        Moore: all neighbors
+    // Von Neumann: all neighbors with intersecting faces
+    if (activeRuleset.neighborCountingRule == NeighborCountingRule::MOORE)
+    {
+        neighborOffsets = {
+            //x, y, z - POSITIVE
+            { 0, 0, 1 },
+            { 0, 1, 0 },
+            { 0, 1, 1 },
+            { 1, 0, 0 },
+            { 1, 0, 1 },
+            { 1, 1, 0 },
+            { 1, 1, 1 },
+            //x, y, z - NEGATIVE
+            { 0, 0,-1 },
+            { 0,-1, 0 },
+            { 0,-1,-1 },
+            {-1, 0, 0 },
+            {-1, 0,-1 },
+            {-1,-1, 0 },
+            {-1,-1,-1 },
+            //x, y, z - POS/NEG
+            { 1, 1,-1 },
+            { 1,-1, 1 },
+            { 1,-1,-1 },
+            {-1, 1, 1 },
+            {-1, 1,-1 },
+            {-1,-1, 1 },
+            {-1,-1,-1 },
+            //x, y, z - NEG/POS
+            {-1,-1, 1 },
+            {-1, 1,-1 },
+            {-1, 1, 1 },
+            { 1,-1,-1 },
+            { 1,-1, 1 },
+            { 1, 1,-1 },
+            { 1, 1, 1 },
+        };
+    } else if (activeRuleset.neighborCountingRule == NeighborCountingRule::VON_NEUMANN)
+    {
+        neighborOffsets = {
+            //x, y, z - POSITIVE
+            { 0, 0, 1 },
+            { 0, 1, 0 },
+            { 1, 0, 0 },
+            //x, y, z - NEGATIVE
+            { 0, 0,-1 },
+            { 0,-1, 0 },
+            {-1, 0, 0 },
+        };
+    }
+
 }
 
 void Simulation::UpdateSimulationState()
