@@ -23,7 +23,7 @@ class Simulation
         void ChangeRuleset(std::string newRuleset);
         void ChangeStateColors(std::pmr::vector<Color> newStateColors);
         std::string GetRulesetAsString();
-        void CountLiveNeighbors();
+        void CountLiveNeighbors(int x, int y, int z);
         void UpdateSimulationState();
         void DrawSimulationState();
         bool IsSimulationRunning();

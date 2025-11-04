@@ -36,7 +36,7 @@ std::string Simulation::GetRulesetAsString()
     return "test";
 }
 
-void Simulation::CountLiveNeighbors()
+void Simulation::CountLiveNeighbors(int x, int y, int z)
 {
     // TODO: imple count live neighbors for moore and von neumann
     std::cout<<"Counting live neighbors"<<std::endl;
@@ -82,7 +82,8 @@ void Simulation::CountLiveNeighbors()
             { 1, 1,-1 },
             { 1, 1, 1 },
         };
-    } else if (activeRuleset.neighborCountingRule == NeighborCountingRule::VON_NEUMANN)
+    }
+    else if (activeRuleset.neighborCountingRule == NeighborCountingRule::VON_NEUMANN)
     {
         neighborOffsets = {
             //x, y, z - POSITIVE
@@ -96,6 +97,11 @@ void Simulation::CountLiveNeighbors()
         };
     }
 
+    for (const auto& offset : neighborOffsets)
+    {
+        // TODO: impl neighbor counting given params x, y, and z.
+        //  Have grid wrapping behavior.
+    }
 }
 
 void Simulation::UpdateSimulationState()
