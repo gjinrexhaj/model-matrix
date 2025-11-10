@@ -36,10 +36,10 @@ std::string Simulation::GetRulesetAsString()
     return "test";
 }
 
-void Simulation::CountLiveNeighbors(int x, int y, int z)
+int Simulation::CountLiveNeighbors(int x, int y, int z)
 {
-    // TODO: imple count live neighbors for moore and von neumann
-    std::cout<<"Counting live neighbors"<<std::endl;
+    // TODO: implement count live neighbors for moore and von neumann
+    std::cout<<"\n--- Counting live neighbors for cell {"<<x<<","<<y<<","<<z<<"} ---"<<std::endl;
 
     int liveNeighbors = 0;
     std::vector<std::tuple<int, int, int>> neighborOffsets;
@@ -72,15 +72,13 @@ void Simulation::CountLiveNeighbors(int x, int y, int z)
             {-1, 1, 1 },
             {-1, 1,-1 },
             {-1,-1, 1 },
-            {-1,-1,-1 },
-            //x, y, z - NEG/POS
-            {-1,-1, 1 },
-            {-1, 1,-1 },
-            {-1, 1, 1 },
-            { 1,-1,-1 },
-            { 1,-1, 1 },
-            { 1, 1,-1 },
-            { 1, 1, 1 },
+            // ALL THREE VALUES CASES
+            { 0,-1, 1 },
+            {-1, 1, 0 },
+            { 1, 0,-1 },
+            { 1,-1, 0 },
+            {-1, 0, 1 },
+            { 0, 1,-1 }
         };
     }
     else if (activeRuleset.neighborCountingRule == NeighborCountingRule::VON_NEUMANN)
@@ -97,30 +95,62 @@ void Simulation::CountLiveNeighbors(int x, int y, int z)
         };
     }
 
-    for (const auto& offset : neighborOffsets)
+    for (const auto& [x_offset, y_offset, z_offset] : neighborOffsets)
     {
-        // TODO: impl neighbor counting given params x, y, and z.
-        //  Have grid wrapping behavior.
+        // Add grid wrapping behavior
+        int neighborX = (x + x_offset + activeSimulationSpan) % activeSimulationSpan;
+        int neighborY = (y + y_offset + activeSimulationSpan) % activeSimulationSpan;
+        int neighborZ = (z + z_offset + activeSimulationSpan) % activeSimulationSpan;
+
+        // Get grid value of neighbor being counted
+        int gridValue = activeGrid.read(neighborX, neighborY, neighborZ);
+
+        // Only count as neighbor if it's at max state
+        // TODO: figure out if this is the case, or if cells that are dying are still technically 'alive'
+        if (gridValue == activeRuleset.numStates)
+        {
+            liveNeighbors++;
+            std::cout<<"FOUND A LIVE NEIGHBOR OF {"<<x<<","<<y<<","<<z<<"}"
+            " AT {"<<x_offset+x<<","<<y_offset+y<<","<<z_offset+z<<"}"<<"\n";
+        }
     }
+
+    std::cout<<"RETURNED LIVE NEIGHBORS = "<<liveNeighbors<<"\n";
+    return liveNeighbors;
 }
 
 void Simulation::UpdateSimulationState()
 {
-    std::cout<<"Updating simulation state"<<std::endl;
+    //std::cout<<"Updating simulation state"<<std::endl;
     // for now, just fill with black cube
     // TODO: impl drawing with appropriate ruleset, colors, etc.
-    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
-                activeGrid.write(x,y,z, 1);
-            }
-        }
-    }
+    // for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+    //     for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+    //         for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+    //             activeGrid.write(x,y,z, 1);
+    //         }
+    //     }
+    // }
+
+    activeGrid.write(2,0,0,1);
+    activeGrid.write(2,2,1,1);
+    activeGrid.write(1,2,1,1);
+    activeGrid.write(1,1,2,1);
+    activeGrid.write(1,0,0,1);
+    activeGrid.write(0,1,0,1);
+    activeGrid.write(0,1,1,1);
+
+
+    int ln = CountLiveNeighbors(1, 0, 1);
+
+
 }
 
 void Simulation::DrawSimulationState()
 {
-    std::cout<<"Drawing simulation state"<<std::endl;
+
+
+    //std::cout<<"Drawing simulation state"<<std::endl;
 
     // Center middle-most cube
     int rc = activeSimulationSpan/2;

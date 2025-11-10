@@ -13,9 +13,9 @@ class ModelMatrixApp final : public Application
         ~ModelMatrixApp() override = default;
 
         // Create simulation members, initialize with default values
-        Ruleset ruleset{2,2,2,NeighborCountingRule::MOORE};
+        Ruleset ruleset{2,2,1,NeighborCountingRule::MOORE};
         std::pmr::vector<Color> colors = {WHITE};
-        Simulation simulation {7, ruleset, colors};
+        Simulation simulation {4, ruleset, colors};
 
         // Initialize app and state
         void startUp() override
