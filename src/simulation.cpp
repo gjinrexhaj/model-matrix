@@ -137,9 +137,14 @@ void Simulation::ClearGrid()
 
 void Simulation::UpdateSimulationState()
 {
+    if (!IsKeyDown(KEY_ENTER))
+    {
+        return;
+    }
 
     int maxState = activeRuleset.numStates;
 
+    // Iterate through grid, apply ruleset and alter a temporary grid
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
@@ -147,7 +152,6 @@ void Simulation::UpdateSimulationState()
                 int numLiveNeighbors = CountLiveNeighbors(x,y,z);
                 // TODO: impl ruleset parser and stuff
 
-                // WRITE ALL CHANGES TO TEMP GRID, THEN SWAP TEMP GRID WITH ACTIVE GRID AT END
                 // if alive
                 if (currentState == maxState)
                 {
@@ -178,7 +182,7 @@ void Simulation::UpdateSimulationState()
         }
     }
 
-    // swap grids
+    // copy temporary grid into active grid afterwards
     activeGrid = tempGrid;
 }
 
@@ -233,7 +237,7 @@ void Simulation::StartSimulation()
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
                 double randomNumber = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
-                if (randomNumber > 9.6)
+                if (randomNumber > 9.5)
                 {
                     activeGrid.write(x,y,z,activeRuleset.numStates);
                 }
