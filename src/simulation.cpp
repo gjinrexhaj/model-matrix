@@ -137,31 +137,15 @@ void Simulation::ClearGrid()
 
 void Simulation::UpdateSimulationState()
 {
-    // TODO: test debug frame advance
-    if (!IsKeyDown(KEY_ENTER))
-    {
-        return;
-    }
-
-    //std::cout<<"Updating simulation state"<<std::endl;
-    // for now, just fill with black cube
-    // TODO: impl updating with appropriate ruleset, as well as state decay
-    // GET CURRENT STATE, GET NUM LIVE NEIGHBORS, APPLY RULESET
 
     int maxState = activeRuleset.numStates;
-
-    // TEMP, ADD STARTING CUBES
-
-
-    // DRAW AS ALIVE IN MAX STATE, IF NOT ZERO, TICK DOWN
 
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
                 int currentState = activeGrid.read(x,y,z);
                 int numLiveNeighbors = CountLiveNeighbors(x,y,z);
-                // TODO: impl seperate birth, survival, etc conditions
-                // TODO: impl basic game of life reulset with color states, flexible num states
+                // TODO: impl ruleset parser and stuff
 
                 // WRITE ALL CHANGES TO TEMP GRID, THEN SWAP TEMP GRID WITH ACTIVE GRID AT END
                 // if alive
@@ -190,28 +174,6 @@ void Simulation::UpdateSimulationState()
                         tempGrid.write(x,y,z,maxState);
                     }
                 }
-
-                /*
-                if (currentState == maxState)
-                {
-                    if (numLiveNeighbors < 2 || numLiveNeighbors > 3)
-                    {
-                        activeGrid.write(x,y,z,maxState-1);
-                    }
-                }
-                // else if dying, decrease the state
-                else if (currentState > 0 ) {
-                    activeGrid.write(x,y,z,currentState-1);
-                }
-                // else if dead
-                else if (currentState == 0)
-                {
-                    if (numLiveNeighbors == 3)
-                    {
-                        activeGrid.write(x,y,z,maxState);
-                    }
-                }
-                */
             }
         }
     }
@@ -271,7 +233,7 @@ void Simulation::StartSimulation()
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
                 double randomNumber = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
-                if (randomNumber > 7.8)
+                if (randomNumber > 9.6)
                 {
                     activeGrid.write(x,y,z,activeRuleset.numStates);
                 }
