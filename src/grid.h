@@ -5,8 +5,6 @@
 #pragma once
 #include <vector>
 
-// TODO: test grid class func in test harness
-// TODO: impl debug logging method for 3d grid
 // TODO: impl dynamic resizing
 
 class Grid
