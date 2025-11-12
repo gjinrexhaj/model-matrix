@@ -33,14 +33,23 @@ void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
 std::string Simulation::GetRulesetAsString()
 {
     std::cout<<"Getting simulation ruleset as string"<<std::endl;
-    return "test";
+    std::string rulesetAsString = std::to_string(activeRuleset.survivalCondition) + " "
+        + std::to_string(activeRuleset.birthCondition) + " "
+        + std::to_string(activeRuleset.numStates) + " ";
+
+    switch (activeRuleset.neighborCountingRule)
+    {
+        case NeighborCountingRule::MOORE:
+            rulesetAsString += "MOORE";
+        case NeighborCountingRule::VON_NEUMANN:
+            rulesetAsString += "VON_NEUMANN";
+    }
+
+    return rulesetAsString;
 }
 
 int Simulation::CountLiveNeighbors(int x, int y, int z)
 {
-    // TODO: implement count live neighbors for moore and von neumann
-    std::cout<<"\n--- Counting live neighbors for cell {"<<x<<","<<y<<","<<z<<"} ---"<<std::endl;
-
     int liveNeighbors = 0;
     std::vector<std::tuple<int, int, int>> neighborOffsets;
 
@@ -106,51 +115,100 @@ int Simulation::CountLiveNeighbors(int x, int y, int z)
         int gridValue = activeGrid.read(neighborX, neighborY, neighborZ);
 
         // Only count as neighbor if it's at max state
-        // TODO: figure out if this is the case, or if cells that are dying are still technically 'alive'
         if (gridValue == activeRuleset.numStates)
         {
             liveNeighbors++;
-            std::cout<<"FOUND A LIVE NEIGHBOR OF {"<<x<<","<<y<<","<<z<<"}"
-            " AT {"<<x_offset+x<<","<<y_offset+y<<","<<z_offset+z<<"}"<<"\n";
         }
     }
 
-    std::cout<<"RETURNED LIVE NEIGHBORS = "<<liveNeighbors<<"\n";
     return liveNeighbors;
 }
 
 void Simulation::UpdateSimulationState()
 {
+    // TODO: test debug frame advance
+    if (!IsKeyPressed(KEY_ENTER))
+    {
+        return;
+    }
+
     //std::cout<<"Updating simulation state"<<std::endl;
     // for now, just fill with black cube
-    // TODO: impl drawing with appropriate ruleset, colors, etc.
-    // for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-    //     for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-    //         for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
-    //             activeGrid.write(x,y,z, 1);
-    //         }
-    //     }
-    // }
+    // TODO: impl updating with appropriate ruleset, as well as state decay
+    // GET CURRENT STATE, GET NUM LIVE NEIGHBORS, APPLY RULESET
 
-    activeGrid.write(2,0,0,1);
-    activeGrid.write(2,2,1,1);
-    activeGrid.write(1,2,1,1);
-    activeGrid.write(1,1,2,1);
-    activeGrid.write(1,0,0,1);
-    activeGrid.write(0,1,0,1);
-    activeGrid.write(0,1,1,1);
+    int maxState = activeRuleset.numStates;
+
+    // TEMP, ADD STARTING CUBES
 
 
-    int ln = CountLiveNeighbors(1, 0, 1);
+    // DRAW AS ALIVE IN MAX STATE, IF NOT ZERO, TICK DOWN
 
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                int currentState = activeGrid.read(x,y,z);
+                int numLiveNeighbors = CountLiveNeighbors(x, y, z);
+                // for now just hardcode GOL with 2 states, dead or alive, only count as alive if equal to max state
+                // TODO: impl seperate birth, survival, etc conditions
+                // TODO: impl basic game of life reulset with color states, flexible num states
 
+                // if alive
+                if (currentState == maxState)
+                {
+                    // check the survival condition
+                    if (numLiveNeighbors == activeRuleset.survivalCondition)
+                    {
+                        activeGrid.write(x,y,z,maxState);
+                    }
+                    else
+                    {
+                        activeGrid.write(x,y,z,maxState-1);
+                    }
+                }
+                // if decaying (still shows, but is effectively dead
+                else if (currentState > 0)
+                {
+                    activeGrid.write(x,y,z,currentState-1);
+                }
+                // if dead, check the birth condition
+                else if (currentState == 0)
+                {
+                    if (numLiveNeighbors == activeRuleset.birthCondition)
+                    {
+                        activeGrid.write(x,y,z,maxState);
+                    }
+                }
+
+                /*
+                if (currentState == maxState)
+                {
+                    if (numLiveNeighbors < 2 || numLiveNeighbors > 3)
+                    {
+                        activeGrid.write(x,y,z,maxState-1);
+                    }
+                }
+                // else if dying, decrease the state
+                else if (currentState > 0 ) {
+                    activeGrid.write(x,y,z,currentState-1);
+                }
+                // else if dead
+                else if (currentState == 0)
+                {
+                    if (numLiveNeighbors == 3)
+                    {
+                        activeGrid.write(x,y,z,maxState);
+                    }
+                }
+                */
+            }
+        }
+    }
 }
 
 void Simulation::DrawSimulationState()
 {
-
-
-    //std::cout<<"Drawing simulation state"<<std::endl;
+    // TODO: impl drawing with colors for each state
 
     // Center middle-most cube
     int rc = activeSimulationSpan/2;
@@ -171,10 +229,13 @@ void Simulation::DrawSimulationState()
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x)
             {
-                // Access using coordinates, draw if state > 0
-                if (activeGrid.read(x,y,z) > 0)
+                // Get cell in question
+                int currentCellState = activeGrid.read(x,y,z);
+
+                // Access using coordinates, draw if state > 0 (0 is death, no state)
+                if (currentCellState > 0)
                 {
-                    DrawCube(Vector3Add(translation3DOffset,Vector3(x,y,z)), 1,1,1,BLACK);
+                    DrawCube(Vector3Add(translation3DOffset,Vector3(x,y,z)), 1,1,1,activeStateColors.at(currentCellState-1));
                 }
             }
         }
@@ -189,6 +250,23 @@ bool Simulation::IsSimulationRunning()
 
 void Simulation::StartSimulation()
 {
+    // start sim with some hardcoded cubes
+    // TODO: figure out how to do drawing, for now just do random
+    activeGrid.write(1,1,1,activeRuleset.numStates);
+    activeGrid.write(1,2,1,activeRuleset.numStates);
+    activeGrid.write(2,1,1,activeRuleset.numStates);
+    activeGrid.write(2,2,1,activeRuleset.numStates);
+    activeGrid.write(1,1,2,activeRuleset.numStates);
+    activeGrid.write(1,2,2,activeRuleset.numStates);
+    activeGrid.write(2,1,2,activeRuleset.numStates);
+    activeGrid.write(2,2,2,activeRuleset.numStates);
+    activeGrid.write(3,1,2,activeRuleset.numStates);
+    activeGrid.write(4,1,2,activeRuleset.numStates);
+    activeGrid.write(5,1,2,activeRuleset.numStates);
+    activeGrid.write(6,1,2,activeRuleset.numStates);
+    activeGrid.write(7,1,2,activeRuleset.numStates);
+
+
     std::cout<<"Starting simulation"<<std::endl;
     running = true;
 }

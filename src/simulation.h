@@ -9,8 +9,6 @@
 #include "ruleset.h"
 #include "grid.h"
 
-// TODO: impl update and draw simulation methods once grid is fully figured out
-
 class Simulation
 {
     public:

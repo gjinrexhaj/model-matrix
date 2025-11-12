@@ -13,15 +13,16 @@ class ModelMatrixApp final : public Application
         ~ModelMatrixApp() override = default;
 
         // Create simulation members, initialize with default values
-        Ruleset ruleset{2,2,1,NeighborCountingRule::MOORE};
-        std::pmr::vector<Color> colors = {WHITE};
-        Simulation simulation {4, ruleset, colors};
+        // DEAD DOES NOT COUNT AS A STATE
+        Ruleset ruleset{4,4,5,NeighborCountingRule::MOORE};
+        std::pmr::vector<Color> colors = {BLACK, MAROON, RED,ORANGE,YELLOW};
+        Simulation simulation {50, ruleset, colors};
 
         // Initialize app and state
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
-            SetTargetFPS(144);
+            SetTargetFPS(60);
             rlImGuiSetup(true);
 
             ImGuiIO& io = ImGui::GetIO();
@@ -29,15 +30,9 @@ class ModelMatrixApp final : public Application
             ViewTexture = LoadRenderTexture(windowWidth, windowHeight);
             io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-            // Initialize default simulation, ruleset, and color state
-            /*
-            ruleset = Ruleset(4,4,2, NeighborCountingRule::MOORE);
-            colors.push_back(Color(1,1,1));
-            simulation = Simulation(10, ruleset, colors);
-            */
-
-            // Start up viewport
+            // Start up viewport and simulation
             viewportWindow.Setup(simulation, ruleset, colors);
+            simulation.StartSimulation();
         }
 
         // User interface code here
