@@ -124,10 +124,21 @@ int Simulation::CountLiveNeighbors(int x, int y, int z)
     return liveNeighbors;
 }
 
+void Simulation::ClearGrid()
+{
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                activeGrid.write(x,y,z,0);
+            }
+        }
+    }
+}
+
 void Simulation::UpdateSimulationState()
 {
     // TODO: test debug frame advance
-    if (!IsKeyPressed(KEY_ENTER))
+    if (!IsKeyDown(KEY_ENTER))
     {
         return;
     }
@@ -148,35 +159,35 @@ void Simulation::UpdateSimulationState()
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
                 int currentState = activeGrid.read(x,y,z);
-                int numLiveNeighbors = CountLiveNeighbors(x, y, z);
-                // for now just hardcode GOL with 2 states, dead or alive, only count as alive if equal to max state
+                int numLiveNeighbors = CountLiveNeighbors(x,y,z);
                 // TODO: impl seperate birth, survival, etc conditions
                 // TODO: impl basic game of life reulset with color states, flexible num states
 
+                // WRITE ALL CHANGES TO TEMP GRID, THEN SWAP TEMP GRID WITH ACTIVE GRID AT END
                 // if alive
                 if (currentState == maxState)
                 {
                     // check the survival condition
                     if (numLiveNeighbors == activeRuleset.survivalCondition)
                     {
-                        activeGrid.write(x,y,z,maxState);
+                        tempGrid.write(x,y,z,maxState);
                     }
                     else
                     {
-                        activeGrid.write(x,y,z,maxState-1);
+                        tempGrid.write(x,y,z,maxState-1);
                     }
                 }
                 // if decaying (still shows, but is effectively dead
                 else if (currentState > 0)
                 {
-                    activeGrid.write(x,y,z,currentState-1);
+                    tempGrid.write(x,y,z,currentState-1);
                 }
                 // if dead, check the birth condition
-                else if (currentState == 0)
+                else
                 {
                     if (numLiveNeighbors == activeRuleset.birthCondition)
                     {
-                        activeGrid.write(x,y,z,maxState);
+                        tempGrid.write(x,y,z,maxState);
                     }
                 }
 
@@ -204,6 +215,9 @@ void Simulation::UpdateSimulationState()
             }
         }
     }
+
+    // swap grids
+    activeGrid = tempGrid;
 }
 
 void Simulation::DrawSimulationState()
@@ -235,7 +249,8 @@ void Simulation::DrawSimulationState()
                 // Access using coordinates, draw if state > 0 (0 is death, no state)
                 if (currentCellState > 0)
                 {
-                    DrawCube(Vector3Add(translation3DOffset,Vector3(x,y,z)), 1,1,1,activeStateColors.at(currentCellState-1));
+                    DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                        activeStateColors.at(currentCellState - 1));
                 }
             }
         }
@@ -250,22 +265,19 @@ bool Simulation::IsSimulationRunning()
 
 void Simulation::StartSimulation()
 {
-    // start sim with some hardcoded cubes
-    // TODO: figure out how to do drawing, for now just do random
-    activeGrid.write(1,1,1,activeRuleset.numStates);
-    activeGrid.write(1,2,1,activeRuleset.numStates);
-    activeGrid.write(2,1,1,activeRuleset.numStates);
-    activeGrid.write(2,2,1,activeRuleset.numStates);
-    activeGrid.write(1,1,2,activeRuleset.numStates);
-    activeGrid.write(1,2,2,activeRuleset.numStates);
-    activeGrid.write(2,1,2,activeRuleset.numStates);
-    activeGrid.write(2,2,2,activeRuleset.numStates);
-    activeGrid.write(3,1,2,activeRuleset.numStates);
-    activeGrid.write(4,1,2,activeRuleset.numStates);
-    activeGrid.write(5,1,2,activeRuleset.numStates);
-    activeGrid.write(6,1,2,activeRuleset.numStates);
-    activeGrid.write(7,1,2,activeRuleset.numStates);
+    // start sim with some random configuration
 
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                double randomNumber = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
+                if (randomNumber > 7.8)
+                {
+                    activeGrid.write(x,y,z,activeRuleset.numStates);
+                }
+            }
+        }
+    }
 
     std::cout<<"Starting simulation"<<std::endl;
     running = true;

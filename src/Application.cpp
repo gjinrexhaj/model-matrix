@@ -15,8 +15,8 @@ class ModelMatrixApp final : public Application
         // Create simulation members, initialize with default values
         // DEAD DOES NOT COUNT AS A STATE
         Ruleset ruleset{4,4,5,NeighborCountingRule::MOORE};
-        std::pmr::vector<Color> colors = {BLACK, MAROON, RED,ORANGE,YELLOW};
-        Simulation simulation {50, ruleset, colors};
+        std::pmr::vector<Color> colors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN};
+        Simulation simulation {80, ruleset, colors};
 
         // Initialize app and state
         void startUp() override
@@ -32,6 +32,7 @@ class ModelMatrixApp final : public Application
 
             // Start up viewport and simulation
             viewportWindow.Setup(simulation, ruleset, colors);
+
             simulation.StartSimulation();
         }
 

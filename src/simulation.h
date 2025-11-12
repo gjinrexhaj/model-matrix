@@ -15,13 +15,14 @@ class Simulation
         // Constructor
         Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors) :
             activeSimulationSpan(simulationSpan), activeRuleset(ruleset),
-            activeStateColors(stateColors), activeGrid(simulationSpan, simulationSpan, simulationSpan) {};
-
+            activeStateColors(stateColors), activeGrid(simulationSpan, simulationSpan, simulationSpan),
+            tempGrid(activeGrid) {}
         // public methods
         void ChangeRuleset(std::string newRuleset);
         void ChangeStateColors(std::pmr::vector<Color> newStateColors);
         std::string GetRulesetAsString();
         int CountLiveNeighbors(int x, int y, int z);
+        void ClearGrid();
         void UpdateSimulationState();
         void DrawSimulationState();
         bool IsSimulationRunning();
@@ -36,5 +37,6 @@ class Simulation
         Ruleset activeRuleset;
         bool running = false;
         Grid activeGrid;
+        Grid tempGrid;
 
 };

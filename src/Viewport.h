@@ -72,6 +72,7 @@ class Viewport
                 rlImGuiImageRenderTextureFit(&ViewTexture, true);
                 viewportHovered = ImGui::IsItemHovered();
 
+                /*
                 // Debug data labels
                 ImGui::BeginChild("Debug");
                 std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", "
@@ -92,6 +93,7 @@ class Viewport
                 ImGui::Text(windowSizeLabel.c_str());
                 ImGui::Text(viewPortHoveredLabel.c_str());
                 ImGui::EndChild();
+                */
 
             }
 
@@ -153,7 +155,7 @@ class Viewport
             }
 
             BeginTextureMode(ViewTexture);
-            ClearBackground(DARKGRAY);
+            ClearBackground(BLACK);
             BeginMode3D(camera);
 
             // Begin draw model code
