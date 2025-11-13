@@ -4,9 +4,12 @@
 
 #include "Application.h"
 
+#include "imgui_internal.h"
 #include "ruleset_new.h"
 #include  "Viewport.h"
 #include "simulation.h"
+
+#define CHAR_BUFFER_SIZE 256
 
 class ModelMatrixApp final : public Application
 {
@@ -16,14 +19,13 @@ class ModelMatrixApp final : public Application
 
         // Create simulation members, initialize with default values
         // DEAD DOES NOT COUNT AS A STATE
-        RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
-        std::pmr::vector<Color> colors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
-        Simulation simulation {100, rulesetNew, colors};
+        RulesetNew rulesetNew{"4/4/7", NeighborCountingRule::MOORE};
+        std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
+        Simulation simulation {70, rulesetNew, activeColors};
 
         // Initialize app and state
         void startUp() override
         {
-            rulesetNew.PrintRulesetAsString();
             // Apply theming, fonts, config flags, and update state
             SetTargetFPS(60);
             rlImGuiSetup(true);
@@ -34,8 +36,7 @@ class ModelMatrixApp final : public Application
             io.ConfigWindowsMoveFromTitleBarOnly = true;
 
             // Start up viewport and simulation
-            viewportWindow.Setup(simulation, rulesetNew, colors);
-
+            viewportWindow.Setup(simulation, rulesetNew, activeColors);
             simulation.StartSimulation();
         }
 
@@ -44,26 +45,93 @@ class ModelMatrixApp final : public Application
         {
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-            // example ui
-            ImGui::ShowDemoWindow();
-
             // Update simulation
             simulation.UpdateSimulationState();
             // 3d viewport window
-            viewportWindow.Update(simulation, rulesetNew, colors);
+            viewportWindow.Update(simulation, rulesetNew, activeColors);
             if (showViewport)
             {
                 viewportWindow.Show();
+            }
+            // control panel window
+            if (showControlPanel)
+            {
+                ImGui::Begin("Control Panel", &showControlPanel);
+
+                // Row 1: Ruleset field
+                ImGui::Text("RULESET");
+                ImGui::BeginChild("rulesetContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
+                ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Ruleset: ");
+                ImGui::SameLine();
+                ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
+                ImGui::TableNextColumn();
+                ImGui::Text("Counting Rule: ");
+                ImGui::SameLine();
+                ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
+                ImGui::TableNextColumn();
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                if (ImGui::Button("Apply Ruleset")) { std::cout << "Apply Ruleset" << std::endl; }
+                ImGui::EndTable();
+                ImGui::EndChild();
+
+                // Row 2: State color picker
+                ImGui::Text("STATE COLORS");
+                ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
+                ImGui::BeginTable("Controls", 1, ImGuiTableFlags_NoSavedSettings);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                int  i = 0;
+                for (auto color : activeColors)
+                {
+                    std::string labelString = "State " + std::to_string(i+1) + " color: ";
+                    float cols[3] = {(float)color.r, (float)color.g, (float)color.b};
+                    ImGui::PushID(i);
+                    ImGui::Text(labelString.c_str());
+                    ImGui::SameLine();
+                    ImGui::ColorEdit3("##xx", cols, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_InputRGB);
+                    i++;
+                    ImGui::PopID();
+
+                }
+                ImGui::EndTable();
+                ImGui::EndChild();
+
+                /*
+                ImGui::Text("Ruleset: ");
+                ImGui::SameLine();
+                ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
+                ImGui::SameLine();
+                ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
+                ImGui::SameLine();
+                if (ImGui::Button("Apply Ruleset")) { std::cout << "apply ruleset!" << std::endl; }
+
+                ImGui::LabelText("Ruleset: ", rulesetField);
+                ImGui::LabelText("counting rule: ", availableCountingRules[selectedCountingRule]);
+                */
+                ImGui::End();
             }
 
         }
 
     // Every var in private represents state
     private:
-        int someNumber = 5;
-        RenderTexture ViewTexture;
+        // Window show flags
         bool showViewport = true;
+        bool showControlPanel = true;
+        // Ruleset editor fields
+        char rulesetField[CHAR_BUFFER_SIZE] = {};
+        int selectedCountingRule = 0;
+        const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
+
+        // Control panel state values
+
+
         Viewport viewportWindow;
+        RenderTexture ViewTexture;
 };
 
 

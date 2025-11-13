@@ -11,22 +11,21 @@
 #include "raymath.h"
 
 
-// TODO: impl change ruleset parameter given a string
-// TODO: impl get ruleset as string
-// TODO: impl update grid state in accordance with ruleset
-// TODO: impl draw grid state in accordance with activeColors
-// TODO: make bounding box have thicker lines
+//TODO: handle error checking for when number of eleemnts in newStateColors != number
+// of states as defined in active ruleset
 
 
 
-void Simulation::ChangeRuleset(std::string newRuleset)
+void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule)
 {
     std::cout<<"Changing ruleset with parameter [" + newRuleset + "]"<<std::endl;
+    activeRuleset = RulesetNew(newRuleset, neighborCountingRule);
 }
 
 void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
 {
     std::cout<<"Changing state colors"<<std::endl;
+    activeStateColors = newStateColors;
 }
 
 
@@ -166,9 +165,6 @@ void Simulation::UpdateSimulationState()
                         {
                             tempGrid.write(x,y,z,maxState);
                             metCondition = true;
-                        } else
-                        {
-                            metCondition = false;
                         }
                     }
                     if (!metCondition)
@@ -246,6 +242,16 @@ bool Simulation::IsSimulationRunning()
 void Simulation::StartSimulation()
 {
     // start sim with some random configuration
+    /*
+    activeGrid.write(34,34,34,activeRuleset.numStates.at(0));
+    activeGrid.write(34,35,34,activeRuleset.numStates.at(0));
+    activeGrid.write(35,35,34,activeRuleset.numStates.at(0));
+    activeGrid.write(34,35,35,activeRuleset.numStates.at(0));
+    activeGrid.write(35,35,35,activeRuleset.numStates.at(0));
+    activeGrid.write(36,35,35,activeRuleset.numStates.at(0));
+    activeGrid.write(37,35,35,activeRuleset.numStates.at(0));
+    activeGrid.write(38,35,35,activeRuleset.numStates.at(0));
+    */
 
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {

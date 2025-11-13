@@ -17,7 +17,7 @@ class Viewport
 {
     public:
         float orbitRadius = 10.0f;
-        Vector2 viewportResolution = {800,800};
+        Vector2 viewportResolution = {1000,1000};
         int radius = 10;
         int cameraFov;
         float panSensitivity;
@@ -70,6 +70,7 @@ class Viewport
 
                 // draw the viewport
                 rlImGuiImageRenderTextureFit(&ViewTexture, true);
+
                 viewportHovered = ImGui::IsItemHovered();
 
                 /*
