@@ -20,7 +20,7 @@ class Simulation
         // public methods
         void ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule);
         void ChangeStateColors(std::pmr::vector<Color> newStateColors);
-        std::string GetRulesetAsString();
+        std::pmr::vector<Color> GetStateColors();
         int CountLiveNeighbors(int x, int y, int z);
         void ClearGrid();
         void UpdateSimulationState();

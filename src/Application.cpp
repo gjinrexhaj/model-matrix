@@ -76,8 +76,6 @@ class ModelMatrixApp final : public Application
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 if (ImGui::Button("Apply Ruleset")) { std::cout << "Apply Ruleset" << std::endl; }
-                // ImGui::SameLine();
-                // ImGui::Text("Active: ");
                 ImGui::TableNextColumn();
                 std::string rsString = rulesetNew.GetRulesetAsString();
                 ImGui::Text("Active: ");
@@ -87,24 +85,36 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
 
                 // Row 2: State color picker
+                currentActiveColors = simulation.GetStateColors();
                 ImGui::Text("STATE COLORS");
                 ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
                 ImGui::BeginTable("Controls", 1, ImGuiTableFlags_NoSavedSettings);
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 int  i = 0;
-                for (auto color : activeColors)
+                for (auto color : currentActiveColors)
                 {
                     std::string labelString = "State " + std::to_string(i+1) + " color: ";
                     float cols[3] = {(float)color.r, (float)color.g, (float)color.b};
+                    cols[0] /= 255.0f;
+                    cols[1] /= 255.0f;
+                    cols[2] /= 255.0f;
                     ImGui::PushID(i);
                     ImGui::Text(labelString.c_str());
                     ImGui::SameLine();
-                    ImGui::ColorEdit3("##xx", cols, ImGuiColorEditFlags_Float | ImGuiColorEditFlags_InputRGB);
+                    ImGui::ColorEdit3("##xx", cols, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float);
                     i++;
+                    cols[0] *= 255.0f;
+                    cols[1] *= 255.0f;
+                    cols[2] *= 255.0f;
+                    Color custom = Color(cols[0], cols[1], cols[2], 255.0f);
+                    newColors.push_back(custom);
                     ImGui::PopID();
-
                 }
+                // Color adjustment logic
+                simulation.ChangeStateColors(newColors);
+                newColors.clear();
+
                 ImGui::EndTable();
                 ImGui::EndChild();
 
@@ -134,6 +144,8 @@ class ModelMatrixApp final : public Application
         char rulesetField[CHAR_BUFFER_SIZE] = {};
         int selectedCountingRule = 0;
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
+        std::pmr::vector<Color> currentActiveColors;
+        std::pmr::vector<Color> newColors;
 
         // Control panel state values
 

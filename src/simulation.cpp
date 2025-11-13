@@ -7,6 +7,7 @@
 #include <iostream>
 #include <ostream>
 #include <random>
+#include <utility>
 
 #include "raymath.h"
 
@@ -24,30 +25,12 @@ void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neig
 
 void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
 {
-    std::cout<<"Changing state colors"<<std::endl;
     activeStateColors = newStateColors;
 }
 
-
-std::string Simulation::GetRulesetAsString()
+std::pmr::vector<Color> Simulation::GetStateColors()
 {
-    /*
-    std::cout<<"Getting simulation ruleset as string"<<std::endl;
-    std::string rulesetAsString = std::to_string(activeRuleset.survivalCondition) + " "
-        + std::to_string(activeRuleset.birthCondition) + " "
-        + std::to_string(activeRuleset.numStates) + " ";
-
-    switch (activeRuleset.neighborCountingRule)
-    {
-        case NeighborCountingRule::MOORE:
-            rulesetAsString += "MOORE";
-        case NeighborCountingRule::VON_NEUMANN:
-            rulesetAsString += "VON_NEUMANN";
-    }
-    */
-    return "";
-
-    //return rulesetAsString;
+    return activeStateColors;
 }
 
 int Simulation::CountLiveNeighbors(int x, int y, int z)
@@ -242,17 +225,7 @@ bool Simulation::IsSimulationRunning()
 void Simulation::StartSimulation()
 {
     // start sim with some random configuration
-    /*
-    activeGrid.write(34,34,34,activeRuleset.numStates.at(0));
-    activeGrid.write(34,35,34,activeRuleset.numStates.at(0));
-    activeGrid.write(35,35,34,activeRuleset.numStates.at(0));
-    activeGrid.write(34,35,35,activeRuleset.numStates.at(0));
-    activeGrid.write(35,35,35,activeRuleset.numStates.at(0));
-    activeGrid.write(36,35,35,activeRuleset.numStates.at(0));
-    activeGrid.write(37,35,35,activeRuleset.numStates.at(0));
-    activeGrid.write(38,35,35,activeRuleset.numStates.at(0));
-    */
-
+    // TODO: make it so this is adjustable from the gui
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
