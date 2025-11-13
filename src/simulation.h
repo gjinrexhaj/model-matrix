@@ -25,6 +25,7 @@ class Simulation
         void ClearGrid();
         void UpdateSimulationState();
         void DrawSimulationState();
+        void RandomizeSimulationState(float sparsity, int cubeRadius, bool additive);
         bool IsSimulationRunning();
         void StartSimulation();
         void StopSimulation();

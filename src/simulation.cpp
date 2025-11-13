@@ -21,6 +21,8 @@ void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neig
 {
     std::cout<<"Changing ruleset with parameter [" + newRuleset + "]"<<std::endl;
     activeRuleset = RulesetNew(newRuleset, neighborCountingRule);
+    activeStateColors.resize(activeRuleset.numStates.at(0));
+
 }
 
 void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
@@ -208,8 +210,42 @@ void Simulation::DrawSimulationState()
                 // Access using coordinates, draw if state > 0 (0 is death, no state)
                 if (currentCellState > 0)
                 {
-                    DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                        activeStateColors.at(currentCellState - 1));
+                    // draw white cube if cell exceeds max state due to change
+                    if (currentCellState > activeRuleset.numStates.at(0))
+                    {
+                        DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                            WHITE);
+                    } else
+                    {
+                        DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                            activeStateColors.at(currentCellState - 1));
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool additive)
+{
+    std::cout<<"--- Randomizing simulation state ---"<<std::endl;
+    std::cout<<"sparsity: "<<sparsity<<"/10.0"<<std::endl;
+    std::cout<<"cubeRadius: "<<cubeRadius<<std::endl;
+    std::cout<<"additive: "<<additive<<std::endl;
+
+    int maxState = activeRuleset.numStates.at(0);
+
+
+    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
+        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
+            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                double determine = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
+                if (determine > sparsity)
+                {
+                    activeGrid.write(x,y,z,maxState);
+                } else if (!additive)
+                {
+                    activeGrid.write(x,y,z,0);
                 }
             }
         }
@@ -224,20 +260,6 @@ bool Simulation::IsSimulationRunning()
 
 void Simulation::StartSimulation()
 {
-    // start sim with some random configuration
-    // TODO: make it so this is adjustable from the gui
-    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
-                double randomNumber = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
-                if (randomNumber > 9.5)
-                {
-                    activeGrid.write(x,y,z,activeRuleset.numStates.at(0));
-                }
-            }
-        }
-    }
-
     std::cout<<"Starting simulation"<<std::endl;
     running = true;
 }

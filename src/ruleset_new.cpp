@@ -99,10 +99,10 @@ std::string RulesetNew::GetRulesetAsString() {
     switch (neighborCountingRule)
     {
         case NeighborCountingRule::MOORE:
-            ncr += "MOORE";
+            ncr += "M";
             break;
         case NeighborCountingRule::VON_NEUMANN:
-            ncr += "VON_NEUMANN";
+            ncr += "VN";
             break;
     }
 

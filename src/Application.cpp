@@ -12,6 +12,10 @@
 
 #define CHAR_BUFFER_SIZE 256
 
+
+// TODO: FINISH GUI
+// TODO: FIX IMGUI SEGFAULT BUG
+
 class ModelMatrixApp final : public Application
 {
     public:
@@ -39,6 +43,8 @@ class ModelMatrixApp final : public Application
             // Start up viewport and simulation
             viewportWindow.Setup(simulation, rulesetNew, activeColors);
             simulation.StartSimulation();
+
+            newColors.reserve(simulation.GetStateColors().size());
         }
 
         // User interface code here
@@ -72,7 +78,6 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("Counting Rule: ");
                 ImGui::SameLine();
                 ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
-                ImGui::TableNextColumn();
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 if (ImGui::Button("Apply Ruleset"))
@@ -92,19 +97,20 @@ class ModelMatrixApp final : public Application
                 currentActiveColors = simulation.GetStateColors();
                 ImGui::Text("STATE COLORS");
                 ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
-                ImGui::BeginTable("Controls", 1, ImGuiTableFlags_NoSavedSettings);
+                ImGui::BeginTable("ColorControls", 1, ImGuiTableFlags_NoSavedSettings);
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
+
                 int  i = 0;
-                for (auto color : currentActiveColors)
+                for (auto color : simulation.GetStateColors())
                 {
-                    std::string labelString = "State " + std::to_string(i+1) + " color: ";
+                    colorStateLabelString = "State " + std::to_string(i+1) + " color: ";
                     float cols[3] = {(float)color.r, (float)color.g, (float)color.b};
                     cols[0] /= 255.0f;
                     cols[1] /= 255.0f;
                     cols[2] /= 255.0f;
                     ImGui::PushID(i);
-                    ImGui::Text(labelString.c_str());
+                    ImGui::Text(colorStateLabelString.c_str());
                     ImGui::SameLine();
                     ImGui::ColorEdit3("##xx", cols, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float);
                     i++;
@@ -115,25 +121,48 @@ class ModelMatrixApp final : public Application
                     newColors.push_back(custom);
                     ImGui::PopID();
                 }
-                // Color adjustment logic
                 simulation.ChangeStateColors(newColors);
                 newColors.clear();
 
                 ImGui::EndTable();
                 ImGui::EndChild();
 
-                /*
-                ImGui::Text("Ruleset: ");
+                // Row 3: Grid drawing
+                ImGui::Text("DRAW CELLS");
+                ImGui::BeginChild("drawellsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
+                ImGui::BeginTable("Drawcellstable", 2, ImGuiTableFlags_NoSavedSettings);
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("RNG Sparsity ");
                 ImGui::SameLine();
-                ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
+                ImGui::DragFloat("##dragFloatForSparity", &rngSparsity, 0.01f, 0.0f, 10.0f);
+                ImGui::Text("Cube Radius  ");
                 ImGui::SameLine();
-                ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
+                ImGui::DragInt("##dragIntForRadius", &cubeRadius, 1, 0, 100);
+                ImGui::Text("Additive Fill");
                 ImGui::SameLine();
-                if (ImGui::Button("Apply Ruleset")) { std::cout << "apply ruleset!" << std::endl; }
+                ImGui::Checkbox("##additiveFillToggle", &additiveFill);
+                ImGui::TableNextColumn();
+                ImGui::Text("PRESS 'R' FOR ONCE");
+                ImGui::Text( "HOLD 'T' FOR MULTIPLE");
+                ImGui::Text("PRESS 'C' TO CLEAR ALL");
+                if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
+                {
+                    simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+                } else if (IsKeyPressed(KEY_C))
+                {
+                    simulation.ClearGrid();
+                }
+                ImGui::EndTable();
+                ImGui::EndChild();
 
-                ImGui::LabelText("Ruleset: ", rulesetField);
-                ImGui::LabelText("counting rule: ", availableCountingRules[selectedCountingRule]);
-                */
+                // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
+                ImGui::Text("VIEWPORT SETTINGS");
+                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
+                ImGui::EndChild();
+
+                // Row 5: Usage guide
+
                 ImGui::End();
             }
 
@@ -150,12 +179,17 @@ class ModelMatrixApp final : public Application
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
         std::vector<NeighborCountingRule> neighborCountingRules =
             {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
+        // Color editor fields
         std::pmr::vector<Color> currentActiveColors;
         std::pmr::vector<Color> newColors;
+        std::string colorStateLabelString;
+        // Cell drawing fields
+        float rngSparsity = 8.9;
+        int cubeRadius = 5;
+        bool additiveFill = false;
+
 
         // Control panel state values
-
-
         Viewport viewportWindow;
         RenderTexture ViewTexture;
 };
