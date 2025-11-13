@@ -62,28 +62,40 @@ RulesetNew::RulesetNew(std::string rulesetParameterString, NeighborCountingRule 
     numStates = {conditionCollection.at(2)};
 }
 
-void RulesetNew::PrintRulesetAsString() {
+std::string RulesetNew::GetRulesetAsString() {
 
 
-    std::string sc = "survivalCondition: ";
-    for (auto num : survivalConditions)
+    std::string sc;
+    for (const int& num : survivalConditions)
     {
-        sc += std::to_string(num) + " ";
+        sc += std::to_string(num);
+        if (&num != &survivalConditions.back())
+        {
+            sc += ",";
+        }
     }
 
-    std::string bc = "birthCondition: ";
-    for (auto num : birthConditions)
+    std::string bc;
+    for (const int& num : birthConditions)
     {
-        bc += std::to_string(num) + " ";
+        bc += std::to_string(num);
+        if (&num != &birthConditions.back())
+        {
+            bc += ",";
+        }
     }
 
-    std::string ns = "numStates: ";
-    for (auto num : numStates)
+    std::string ns;
+    for (const int& num : numStates)
     {
-        ns += std::to_string(num) + " ";
+        ns += std::to_string(num);
+        if (&num != &numStates.back())
+        {
+            ns += ",";
+        }
     }
 
-    std::string ncr = "neighborCountingRule: ";
+    std::string ncr;
     switch (neighborCountingRule)
     {
         case NeighborCountingRule::MOORE:
@@ -94,9 +106,6 @@ void RulesetNew::PrintRulesetAsString() {
             break;
     }
 
-
-    std::cout<<"PRINTING RULESET AS STRING"<<"\n";
-    std::cout<<sc<<"\n";
-    std::cout<<bc<<"\n";
-    std::cout<<ns<<"\n";
+    std::string conditionsString = sc + "/" + bc + "/" + ns + "/" + ncr;
+    return conditionsString;
 }

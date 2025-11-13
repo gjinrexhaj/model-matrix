@@ -22,5 +22,5 @@ public:
 
     RulesetNew(std::string rulesetParameterString, NeighborCountingRule neighborCountingRule);
 
-    void PrintRulesetAsString();
+    std::string GetRulesetAsString();
 };

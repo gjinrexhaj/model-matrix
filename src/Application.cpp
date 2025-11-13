@@ -8,6 +8,7 @@
 #include "ruleset_new.h"
 #include  "Viewport.h"
 #include "simulation.h"
+#include <algorithm>
 
 #define CHAR_BUFFER_SIZE 256
 
@@ -19,7 +20,7 @@ class ModelMatrixApp final : public Application
 
         // Create simulation members, initialize with default values
         // DEAD DOES NOT COUNT AS A STATE
-        RulesetNew rulesetNew{"4/4/7", NeighborCountingRule::MOORE};
+        RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
         Simulation simulation {70, rulesetNew, activeColors};
 
@@ -75,6 +76,13 @@ class ModelMatrixApp final : public Application
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 if (ImGui::Button("Apply Ruleset")) { std::cout << "Apply Ruleset" << std::endl; }
+                // ImGui::SameLine();
+                // ImGui::Text("Active: ");
+                ImGui::TableNextColumn();
+                std::string rsString = rulesetNew.GetRulesetAsString();
+                ImGui::Text("Active: ");
+                ImGui::SameLine();
+                ImGui::LabelText("##activeRS", rsString.c_str());
                 ImGui::EndTable();
                 ImGui::EndChild();
 
