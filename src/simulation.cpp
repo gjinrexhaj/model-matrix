@@ -32,6 +32,7 @@ void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
 
 std::string Simulation::GetRulesetAsString()
 {
+    /*
     std::cout<<"Getting simulation ruleset as string"<<std::endl;
     std::string rulesetAsString = std::to_string(activeRuleset.survivalCondition) + " "
         + std::to_string(activeRuleset.birthCondition) + " "
@@ -44,8 +45,10 @@ std::string Simulation::GetRulesetAsString()
         case NeighborCountingRule::VON_NEUMANN:
             rulesetAsString += "VON_NEUMANN";
     }
+    */
+    return "";
 
-    return rulesetAsString;
+    //return rulesetAsString;
 }
 
 int Simulation::CountLiveNeighbors(int x, int y, int z)
@@ -115,7 +118,7 @@ int Simulation::CountLiveNeighbors(int x, int y, int z)
         int gridValue = activeGrid.read(neighborX, neighborY, neighborZ);
 
         // Only count as neighbor if it's at max state
-        if (gridValue == activeRuleset.numStates)
+        if (gridValue == activeRuleset.numStates.at(0))
         {
             liveNeighbors++;
         }
@@ -142,7 +145,7 @@ void Simulation::UpdateSimulationState()
         return;
     }
 
-    int maxState = activeRuleset.numStates;
+    int maxState = activeRuleset.numStates.at(0);
 
     // Iterate through grid, apply ruleset and alter a temporary grid
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
@@ -155,12 +158,20 @@ void Simulation::UpdateSimulationState()
                 // if alive
                 if (currentState == maxState)
                 {
-                    // check the survival condition
-                    if (numLiveNeighbors == activeRuleset.survivalCondition)
+                    // check the survival condition(s)
+                    bool metCondition = false;
+                    for (auto survivalCondition : activeRuleset.survivalConditions)
                     {
-                        tempGrid.write(x,y,z,maxState);
+                        if (numLiveNeighbors == survivalCondition)
+                        {
+                            tempGrid.write(x,y,z,maxState);
+                            metCondition = true;
+                        } else
+                        {
+                            metCondition = false;
+                        }
                     }
-                    else
+                    if (!metCondition)
                     {
                         tempGrid.write(x,y,z,maxState-1);
                     }
@@ -173,9 +184,12 @@ void Simulation::UpdateSimulationState()
                 // if dead, check the birth condition
                 else
                 {
-                    if (numLiveNeighbors == activeRuleset.birthCondition)
+                    for (auto birthCondition : activeRuleset.birthConditions)
                     {
-                        tempGrid.write(x,y,z,maxState);
+                        if (numLiveNeighbors == birthCondition)
+                        {
+                            tempGrid.write(x,y,z,maxState);
+                        }
                     }
                 }
             }
@@ -239,7 +253,7 @@ void Simulation::StartSimulation()
                 double randomNumber = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
                 if (randomNumber > 9.5)
                 {
-                    activeGrid.write(x,y,z,activeRuleset.numStates);
+                    activeGrid.write(x,y,z,activeRuleset.numStates.at(0));
                 }
             }
         }
@@ -257,6 +271,7 @@ void Simulation::StopSimulation()
 
 void Simulation::LogSimulationState()
 {
+    /*
     std::cout<<"---- LOGGING SIMULATION STATE ----"<<std::endl;
     // print simSpan
     std::cout<<"activeSimulationSpan: "<< activeSimulationSpan<<std::endl;
@@ -284,4 +299,5 @@ void Simulation::LogSimulationState()
     std::cout << "]" << std::endl;
     // print running
     std::cout<<"running: " << running << std::endl;
+    */
 }

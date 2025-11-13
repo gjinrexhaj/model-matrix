@@ -3,6 +3,8 @@
 //
 
 #include "Application.h"
+
+#include "ruleset_new.h"
 #include  "Viewport.h"
 #include "simulation.h"
 
@@ -14,13 +16,14 @@ class ModelMatrixApp final : public Application
 
         // Create simulation members, initialize with default values
         // DEAD DOES NOT COUNT AS A STATE
-        Ruleset ruleset{4,5,7,NeighborCountingRule::MOORE};
+        RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> colors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
-        Simulation simulation {100, ruleset, colors};
+        Simulation simulation {100, rulesetNew, colors};
 
         // Initialize app and state
         void startUp() override
         {
+            rulesetNew.PrintRulesetAsString();
             // Apply theming, fonts, config flags, and update state
             SetTargetFPS(60);
             rlImGuiSetup(true);
@@ -31,7 +34,7 @@ class ModelMatrixApp final : public Application
             io.ConfigWindowsMoveFromTitleBarOnly = true;
 
             // Start up viewport and simulation
-            viewportWindow.Setup(simulation, ruleset, colors);
+            viewportWindow.Setup(simulation, rulesetNew, colors);
 
             simulation.StartSimulation();
         }
@@ -47,7 +50,7 @@ class ModelMatrixApp final : public Application
             // Update simulation
             simulation.UpdateSimulationState();
             // 3d viewport window
-            viewportWindow.Update(simulation, ruleset, colors);
+            viewportWindow.Update(simulation, rulesetNew, colors);
             if (showViewport)
             {
                 viewportWindow.Show();

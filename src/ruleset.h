@@ -3,17 +3,19 @@
 //
 
 #pragma once
+#include "ruleset_new.h"
 
 // TODO, ADJUST RULESET SO THAT MEMEBR VARS ARE VECOTRS OF STRINGS,
 //  AND INPUT PARAMETER IS INPUT STRING THAT AUTOMATICALLY PARSES
 //  AT CONSTRUCTION TO BUILD THE RULESET
 
-
+/*
 enum class NeighborCountingRule: int
 {
     MOORE = 0,
     VON_NEUMANN = 1,
 };
+*/
 
 class Ruleset
 {
