@@ -75,7 +75,11 @@ class ModelMatrixApp final : public Application
                 ImGui::TableNextColumn();
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
-                if (ImGui::Button("Apply Ruleset")) { std::cout << "Apply Ruleset" << std::endl; }
+                if (ImGui::Button("Apply Ruleset"))
+                {
+                    rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                    simulation.ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                }
                 ImGui::TableNextColumn();
                 std::string rsString = rulesetNew.GetRulesetAsString();
                 ImGui::Text("Active: ");
@@ -144,6 +148,8 @@ class ModelMatrixApp final : public Application
         char rulesetField[CHAR_BUFFER_SIZE] = {};
         int selectedCountingRule = 0;
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
+        std::vector<NeighborCountingRule> neighborCountingRules =
+            {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
         std::pmr::vector<Color> currentActiveColors;
         std::pmr::vector<Color> newColors;
 
