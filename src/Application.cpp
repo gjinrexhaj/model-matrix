@@ -50,7 +50,7 @@ class ModelMatrixApp final : public Application
             newColors.reserve(simulation.GetStateColors().size());
             simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
 
-            themes::load_ue(); // TODO: test theming after segfault bug is fixed
+            themes::load_ue();
 
         }
 
