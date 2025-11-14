@@ -6,9 +6,10 @@
 
 #include "imgui_internal.h"
 #include "ruleset_new.h"
-#include  "Viewport.h"
+#include "Viewport.h"
 #include "simulation.h"
 #include "themes.h"
+
 
 #define CHAR_BUFFER_SIZE 256
 
@@ -32,6 +33,9 @@ class ModelMatrixApp final : public Application
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
         Simulation simulation {70, rulesetNew, activeColors};
+        // Fonts
+        ImFont* interFont;
+        ImFont* consoleFont;
 
         // Initialize app and state
         void startUp() override
@@ -51,6 +55,10 @@ class ModelMatrixApp final : public Application
             simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
 
             themes::load_ue();
+            consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
+            interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
+            io.FontDefault = interFont;
+
 
         }
 
@@ -90,6 +98,7 @@ class ModelMatrixApp final : public Application
             if (showSimStatus)
             {
                 ImGui::Begin("Status", &showSimStatus);
+                ImGui::PushFont(consoleFont);
                 if (simulation.IsSimulationRunning())
                 {
                     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
@@ -98,6 +107,8 @@ class ModelMatrixApp final : public Application
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE IDLE");
                 }
                 ImGui::Text("FPS: %d", GetFPS());
+                // TODO: add more status info, like GL version being used, etc
+                ImGui::PopFont();
                 ImGui::End();
             }
 
@@ -106,14 +117,14 @@ class ModelMatrixApp final : public Application
             {
                 // Row 5: Usage guide
                 ImGui::Begin("Guide", &showUsageGuide);
-                ImGui::Text("CONTROLS: ");
-                ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
-                ImGui::Text("RG_ARROW: ADVANCE (HOLD)");
-                ImGui::Text("LF_ARROW: REGRESS (HOLD)");
-                ImGui::Text("       C: CLEAR GRID (PRESS)");
-                ImGui::Text("       R: RANDMOIZE GRID (PRESS)");
+                ImGui::Text("--- CONTROLS --- ");
+                ImGui::Text("ENTER: toggle engine");
+                ImGui::Text(" RIGHT: advance");
+                ImGui::Text(" LEFT: regress");
+                ImGui::Text(" C: clear grid");
+                ImGui::Text(" R/T: randomize grid");
                 ImGui::Text("\n");
-                ImGui::Text("RULESET FORMATTING:");
+                ImGui::Text("--- RULESET FORMATTING ---");
                 ImGui::Text("<survivalConditions>/<birthConditions>/<numStates>");
                 ImGui::Text("Example: '4/4,6/7'");
                 ImGui::End();
@@ -162,7 +173,7 @@ class ModelMatrixApp final : public Application
                         simulation.ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
                     }
                     ImGui::TableNextColumn();
-                    std::string rsString = rulesetNew.GetRulesetAsString();
+                    rsString = rulesetNew.GetRulesetAsString();
                     ImGui::Text("Active: ");
                     ImGui::SameLine();
                     ImGui::LabelText("##activeRS", rsString.c_str());
@@ -335,6 +346,7 @@ class ModelMatrixApp final : public Application
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
         std::vector<NeighborCountingRule> neighborCountingRules =
             {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
+        std::string rsString = "";
         // Color editor fields
         std::pmr::vector<Color> currentActiveColors;
         std::pmr::vector<Color> newColors;
