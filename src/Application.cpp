@@ -18,7 +18,6 @@
 // TODO: GET RID OF OLD RULSET CLASS
 // TODO: handle error checking for when number of eleemnts in newStateColors != number
 //  of states as defined in active ruleset
-// TODO: impl theming
 // TODO: impl fps counter+graph on stats window
 // TODO: impl simulation speed slider on viewport control panel window
 
