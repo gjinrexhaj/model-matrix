@@ -13,14 +13,13 @@
 #define CHAR_BUFFER_SIZE 256
 
 
-// TODO: FIX IMGUI SEGFAULT BUG
-// TODO: FINISH GUI
-// TODO: IMPL SIMSPACE RESIZING - impl accurate resize method in grid that preserves ordering
+
 // TODO: OPTIMIZE PROGRAM
 // TODO: GET RID OF OLD RULSET CLASS
 // TODO: handle error checking for when number of eleemnts in newStateColors != number
 //  of states as defined in active ruleset
 // TODO: impl theming
+// TODO: impl fps counter+graph on stats window
 
 class ModelMatrixApp final : public Application
 {
@@ -60,6 +59,31 @@ class ModelMatrixApp final : public Application
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
             // Update simulation
             simulation.UpdateSimulationState();
+
+            // menu bar for opening windows
+            ImGui::BeginMainMenuBar();
+            if (ImGui::MenuItem("Viewport"))
+            {
+                showViewport = !showViewport;
+            }
+            if (ImGui::MenuItem("Control Panel"))
+            {
+                showControlPanel = !showControlPanel;
+            }
+            if (ImGui::MenuItem("Status"))
+            {
+                showSimStatus = !showSimStatus;
+            }
+            if (ImGui::MenuItem("Guide"))
+            {
+                showUsageGuide = !showUsageGuide;
+            }
+            if (ImGui::MenuItem("About"))
+            {
+                showAbout = !showAbout;
+            }
+            ImGui::EndMainMenuBar();
+
             // 3d viewport window
             viewportWindow.Update(simulation, rulesetNew, activeColors);
             if (showViewport)
@@ -86,27 +110,49 @@ class ModelMatrixApp final : public Application
                 }
             }
             // Live info window
-            if (showSimInfo)
+            if (showSimStatus)
             {
-                ImGui::Begin("Simulation Info", &showSimInfo);
+                ImGui::Begin("Status", &showSimStatus);
                 if (simulation.IsSimulationRunning())
                 {
-                    ImGui::Text("ENGINE RUNNING");
+                    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
                 } else
                 {
-                    ImGui::Text("ENGINE IDLE");
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE IDLE");
                 }
                 ImGui::Text("FPS: %d", GetFPS());
                 ImGui::End();
             }
 
+            // Usage guide
             if (showUsageGuide)
             {
                 // Row 5: Usage guide
-                ImGui::Begin("Usage Guide", &showUsageGuide);
+                ImGui::Begin("Guide", &showUsageGuide);
+                ImGui::Text("CONTROLS: ");
                 ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
                 ImGui::Text("RG_ARROW: ADVANCE (HOLD)");
                 ImGui::Text("LF_ARROW: REGRESS (HOLD)");
+                ImGui::Text("\n");
+                ImGui::Text("RULESET FORMATTING:");
+                ImGui::Text("<survivalConditions>/<birthConditions>/<numStates>");
+                ImGui::Text("Example: '4/4,6/7'");
+                ImGui::End();
+            }
+
+            // About window
+            if (showAbout)
+            {
+                ImGui::Begin("About", &showAbout);
+                ImGui::BeginChild("Contents", ImVec2(0, 0), true);
+                ImGui::Text("MODEL-MATRIX");
+                ImGui::Text("dev 0.7");
+                ImGui::Text("A 3D Cellular Automata engine, "
+                            "\nimplemented fully in C/C++"
+                            "\n"
+                            "\n"
+                            "\nDeveloped by: Gjin Rexhaj");
+                ImGui::EndChild();
                 ImGui::End();
             }
 
@@ -239,8 +285,7 @@ class ModelMatrixApp final : public Application
                     ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors);
                     if (ImGui::Button("Apply Viewport Changes"))
                     {
-                        // TODO: impl methods in viewport and sim to change these values
-                        viewportWindow.viewportResolution = Vector2(resolution[0], resolution[1]);
+                        viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
                         simulation.ResizeSimulationSpan(simulationSize);
                         Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
                         Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
@@ -259,9 +304,10 @@ class ModelMatrixApp final : public Application
     private:
         // Window show flags
         bool showViewport = true;
-        bool showSimInfo = true;
+        bool showSimStatus = true;
         bool showControlPanel = true;
         bool showUsageGuide = true;
+        bool showAbout = false;
         // Ruleset editor fields
         char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
         int selectedCountingRule = 0;

@@ -16,7 +16,6 @@
 class Viewport
 {
     public:
-        Vector2 viewportResolution = {1000,1000};
         int radius = 150;
         int cameraFov;
         float panSensitivity;
@@ -73,30 +72,6 @@ class Viewport
                 rlImGuiImageRenderTextureFit(&ViewTexture, true);
 
                 viewportHovered = ImGui::IsItemHovered();
-
-                /*
-                // Debug data labels
-                ImGui::BeginChild("Debug");
-                std::string camPosText = " Camera Position [" + std::to_string(camera.position.x) + ", "
-                    + std::to_string(camera.position.y) + ", " + std::to_string(camera.position.z) + "]";
-                std::string isFocusedLabel = " Window focus: " + std::to_string(focused);
-                std::string resolutionLabel = " Viewport resolution: [" + std::to_string(viewportResolution.x) + ", "
-                    + std::to_string(viewportResolution.y) + "]";
-                std::string windowPositionLabel = " Window position: [" + std::to_string(windowX) + ", "
-                    + std::to_string(windowY) + "]";
-                std::string windowSizeLabel = " Window size: [" + std::to_string(windowWidth) + ", "
-                    + std::to_string(windowHeight) + "]";
-                std::string viewPortHoveredLabel = " ViewPort hovered: " + std::to_string(viewportHovered);
-
-                ImGui::Text(camPosText.c_str());
-                ImGui::Text(isFocusedLabel.c_str());
-                ImGui::Text(resolutionLabel.c_str());
-                ImGui::Text(windowPositionLabel.c_str());
-                ImGui::Text(windowSizeLabel.c_str());
-                ImGui::Text(viewPortHoveredLabel.c_str());
-                ImGui::EndChild();
-                */
-
             }
 
             ImGui::PopStyleVar();
@@ -201,8 +176,16 @@ class Viewport
             viewportSimulation.DrawSimulationState();
         }
 
+        void UpdateViewportResolution(int x, int y)
+        {
+            viewportResolution.x = x;
+            viewportResolution.y = y;
+            ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
+        }
+
 
     private:
+        Vector2 viewportResolution = {1000,1000};
         RenderTexture ViewTexture = {};
         bool open = true;
         bool focused = false;
