@@ -37,7 +37,6 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
-            //themes::load_excellency(); // TODO: test theming after segfault bug is fixed
             SetTargetFPS(60);
             rlImGuiSetup(true);
 
@@ -50,6 +49,9 @@ class ModelMatrixApp final : public Application
             viewportWindow.Setup(simulation, rulesetNew, activeColors);
             newColors.reserve(simulation.GetStateColors().size());
             simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+
+            themes::load_ue(); // TODO: test theming after segfault bug is fixed
+
         }
 
         // User interface code here
@@ -59,6 +61,8 @@ class ModelMatrixApp final : public Application
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
             // Update simulation
             simulation.UpdateSimulationState();
+
+            ImGui::ShowDemoWindow();
 
             // menu bar for opening windows
             ImGui::BeginMainMenuBar();
