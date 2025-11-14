@@ -8,6 +8,7 @@
 #include <ostream>
 #include <random>
 #include <utility>
+#include <valarray>
 
 #include "raymath.h"
 
@@ -116,6 +117,7 @@ void Simulation::ClearGrid()
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
         for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+                tempGrid.write(x,y,z,0);
                 activeGrid.write(x,y,z,0);
             }
         }
@@ -124,7 +126,7 @@ void Simulation::ClearGrid()
 
 void Simulation::UpdateSimulationState()
 {
-    if (!IsKeyDown(KEY_ENTER))
+    if (!running)
     {
         return;
     }
@@ -183,8 +185,6 @@ void Simulation::UpdateSimulationState()
 
 void Simulation::DrawSimulationState()
 {
-    // TODO: impl drawing with colors for each state
-
     // Center middle-most cube
     int rc = activeSimulationSpan/2;
     Vector3 translation3DOffset;
@@ -235,10 +235,17 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
 
     int maxState = activeRuleset.numStates.at(0);
 
+    if (cubeRadius > activeGrid.getDepth())
+    {
+        cubeRadius = activeGrid.getDepth();
+    }
 
-    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
+    int startingPoint = activeGrid.getDepth()/2 - cubeRadius/2;
+    int endingPoint = startingPoint + cubeRadius;
+
+    for (unsigned int z = startingPoint; z < endingPoint; ++z) {
+        for (unsigned int y = startingPoint; y < endingPoint; ++y) {
+            for (unsigned int x = startingPoint; x < endingPoint; ++x) {
                 double determine = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
                 if (determine > sparsity)
                 {
@@ -254,19 +261,16 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
 
 bool Simulation::IsSimulationRunning()
 {
-    std::cout<<"Checking if simulation running"<<std::endl;
     return running;
 }
 
 void Simulation::StartSimulation()
 {
-    std::cout<<"Starting simulation"<<std::endl;
     running = true;
 }
 
 void Simulation::StopSimulation()
 {
-    std::cout<<"Stopping simulation"<<std::endl;
     running = false;
 }
 

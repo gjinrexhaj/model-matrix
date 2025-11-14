@@ -16,9 +16,8 @@
 class Viewport
 {
     public:
-        float orbitRadius = 10.0f;
         Vector2 viewportResolution = {1000,1000};
-        int radius = 10;
+        int radius = 150;
         int cameraFov;
         float panSensitivity;
         int scrollSpeed;

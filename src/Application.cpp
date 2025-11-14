@@ -45,9 +45,8 @@ class ModelMatrixApp final : public Application
 
             // Start up viewport and simulation
             viewportWindow.Setup(simulation, rulesetNew, activeColors);
-            simulation.StartSimulation();
-
             newColors.reserve(simulation.GetStateColors().size());
+            simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
         }
 
         // User interface code here
@@ -165,6 +164,31 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
 
                 // Row 5: Usage guide
+                ImGui::Text("USAGE GUIDE");
+                ImGui::BeginChild("usageGuideSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
+                ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
+                ImGui::Text("RG_ARROW: FORWARDS (HOLD)");
+                ImGui::Text("LF_ARROW: BACKWARD (HOLD)");
+                if (simulation.IsSimulationRunning())
+                {
+                    if (IsKeyPressed(KEY_ENTER))
+                    {
+                        simulation.StopSimulation();
+                    }
+                } else
+                {
+                    if (IsKeyPressed(KEY_ENTER))
+                    {
+                        simulation.StartSimulation();
+                    } else if (IsKeyDown(KEY_RIGHT))
+                    {
+                        simulation.StartSimulation();
+                        simulation.UpdateSimulationState();
+                        simulation.StopSimulation();
+                    }
+                }
+
+                ImGui::EndChild();
 
                 ImGui::End();
             }
@@ -188,7 +212,7 @@ class ModelMatrixApp final : public Application
         std::string colorStateLabelString;
         // Cell drawing fields
         float rngSparsity = 8.9;
-        int cubeRadius = 5;
+        int cubeRadius = 30;
         bool additiveFill = false;
 
 
