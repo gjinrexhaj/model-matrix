@@ -86,31 +86,6 @@ class ModelMatrixApp final : public Application
             }
             ImGui::EndMainMenuBar();
 
-            // 3d viewport window
-            viewportWindow.Update(simulation, rulesetNew, activeColors);
-            if (showViewport)
-            {
-                viewportWindow.Show();
-                // check for inputs
-                if (simulation.IsSimulationRunning())
-                {
-                    if (IsKeyPressed(KEY_ENTER))
-                    {
-                        simulation.StopSimulation();
-                    }
-                } else
-                {
-                    if (IsKeyPressed(KEY_ENTER))
-                    {
-                        simulation.StartSimulation();
-                    } else if (IsKeyDown(KEY_RIGHT))
-                    {
-                        simulation.StartSimulation();
-                        simulation.UpdateSimulationState();
-                        simulation.StopSimulation();
-                    }
-                }
-            }
             // Live info window
             if (showSimStatus)
             {
@@ -313,6 +288,33 @@ class ModelMatrixApp final : public Application
                     ImGui::EndTable();
                 }
                 ImGui::EndChild();
+
+
+                // 3d viewport window
+                viewportWindow.Update(simulation, rulesetNew, activeColors);
+                if (showViewport)
+                {
+                    viewportWindow.Show();
+                    // check for inputs
+                    if (simulation.IsSimulationRunning())
+                    {
+                        if (IsKeyPressed(KEY_ENTER))
+                        {
+                            simulation.StopSimulation();
+                        }
+                    } else
+                    {
+                        if (IsKeyPressed(KEY_ENTER))
+                        {
+                            simulation.StartSimulation();
+                        } else if (IsKeyDown(KEY_RIGHT))
+                        {
+                            simulation.StartSimulation();
+                            simulation.UpdateSimulationState();
+                            simulation.StopSimulation();
+                        }
+                    }
+                }
                 ImGui::End();
             }
 
