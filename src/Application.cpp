@@ -110,6 +110,8 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
                 ImGui::Text("RG_ARROW: ADVANCE (HOLD)");
                 ImGui::Text("LF_ARROW: REGRESS (HOLD)");
+                ImGui::Text("       C: CLEAR GRID (PRESS)");
+                ImGui::Text("       R: RANDMOIZE GRID (PRESS)");
                 ImGui::Text("\n");
                 ImGui::Text("RULESET FORMATTING:");
                 ImGui::Text("<survivalConditions>/<birthConditions>/<numStates>");
@@ -224,13 +226,6 @@ class ModelMatrixApp final : public Application
                     ImGui::Text("PRESS 'R' FOR ONCE");
                     ImGui::Text( "HOLD 'T' FOR MULTIPLE");
                     ImGui::Text("PRESS 'C' TO CLEAR ALL");
-                    if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
-                    {
-                        simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
-                    } else if (IsKeyPressed(KEY_C))
-                    {
-                        simulation.ClearGrid();
-                    }
                     ImGui::EndTable();
                 }
                 ImGui::EndChild();
@@ -288,36 +283,42 @@ class ModelMatrixApp final : public Application
                     ImGui::EndTable();
                 }
                 ImGui::EndChild();
-
-
-                // 3d viewport window
-                viewportWindow.Update(simulation, rulesetNew, activeColors);
-                if (showViewport)
-                {
-                    viewportWindow.Show();
-                    // check for inputs
-                    if (simulation.IsSimulationRunning())
-                    {
-                        if (IsKeyPressed(KEY_ENTER))
-                        {
-                            simulation.StopSimulation();
-                        }
-                    } else
-                    {
-                        if (IsKeyPressed(KEY_ENTER))
-                        {
-                            simulation.StartSimulation();
-                        } else if (IsKeyDown(KEY_RIGHT))
-                        {
-                            simulation.StartSimulation();
-                            simulation.UpdateSimulationState();
-                            simulation.StopSimulation();
-                        }
-                    }
-                }
                 ImGui::End();
             }
 
+            // 3d viewport window
+            viewportWindow.Update(simulation, rulesetNew, activeColors);
+            if (showViewport)
+            {
+                viewportWindow.Show();
+            }
+
+            // check for inputs
+            if (simulation.IsSimulationRunning())
+            {
+                if (IsKeyPressed(KEY_ENTER))
+                {
+                    simulation.StopSimulation();
+                }
+            } else
+            {
+                if (IsKeyPressed(KEY_ENTER))
+                {
+                    simulation.StartSimulation();
+                } else if (IsKeyDown(KEY_RIGHT))
+                {
+                    simulation.StartSimulation();
+                    simulation.UpdateSimulationState();
+                    simulation.StopSimulation();
+                }
+            }
+            if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
+            {
+                simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+            } else if (IsKeyPressed(KEY_C))
+            {
+                simulation.ClearGrid();
+            }
         }
 
     // Every var in private represents state
