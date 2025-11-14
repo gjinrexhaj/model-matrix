@@ -8,18 +8,19 @@
 #include "ruleset_new.h"
 #include  "Viewport.h"
 #include "simulation.h"
-#include <algorithm>
+#include "themes.h"
 
 #define CHAR_BUFFER_SIZE 256
 
 
-// TODO: FINISH GUI
 // TODO: FIX IMGUI SEGFAULT BUG
+// TODO: FINISH GUI
 // TODO: IMPL SIMSPACE RESIZING - impl accurate resize method in grid that preserves ordering
 // TODO: OPTIMIZE PROGRAM
 // TODO: GET RID OF OLD RULSET CLASS
-//TODO: handle error checking for when number of eleemnts in newStateColors != number
-// of states as defined in active ruleset
+// TODO: handle error checking for when number of eleemnts in newStateColors != number
+//  of states as defined in active ruleset
+// TODO: impl theming
 
 class ModelMatrixApp final : public Application
 {
@@ -37,6 +38,7 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
+            //themes::load_excellency(); // TODO: test theming after segfault bug is fixed
             SetTargetFPS(60);
             rlImGuiSetup(true);
 
@@ -113,7 +115,6 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
 
                 // Row 2: State color picker
-
                 currentActiveColors = simulation.GetStateColors();
                 ImGui::Text("STATE COLORS");
                 ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
@@ -238,9 +239,6 @@ class ModelMatrixApp final : public Application
                     }
                 }
                 ImGui::EndChild();
-
-
-
                 ImGui::End();
             }
 
