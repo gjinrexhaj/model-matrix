@@ -265,9 +265,23 @@ class ModelMatrixApp final : public Application
                 if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
-                    ImGui::Text("Resolution: ");
+                    ImGui::Text("Res: ");
                     ImGui::SameLine();
-                    ImGui::InputInt2("##resolutionInputInt2", resolution);
+                    if (!fitToWindow)
+                    {
+                        ImGui::InputInt2("##resolutionInputInt2", resolution);
+                    } else
+                    {
+                        ImGui::BeginDisabled();
+                        resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
+                        resolution[1] = viewportWindow.GetWindowSize().at(1);
+                        ImGui::InputInt2("##resolutionInputInt2disabled", resolution);
+                        ImGui::EndDisabled();
+                    }
+                    ImGui::SameLine();
+                    ImGui::Text("Auto: ");
+                    ImGui::SameLine();
+                    ImGui::Checkbox("##autofitViewportToWindow", &fitToWindow);
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     ImGui::Text("Grid Size: ");
@@ -283,6 +297,8 @@ class ModelMatrixApp final : public Application
                     ImGui::Text("BoundBox Color: ");
                     ImGui::SameLine();
                     ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
                     if (ImGui::Button("Apply Viewport Changes"))
                     {
                         viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
@@ -328,6 +344,7 @@ class ModelMatrixApp final : public Application
         int simulationSize = 70;
         float backgroundColors[3] = {0,0,0};
         float boundboxColors[3] = {1,1,1};
+        bool fitToWindow = false;
 
 
         // Control panel state values

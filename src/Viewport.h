@@ -183,6 +183,11 @@ class Viewport
             ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
         }
 
+        std::vector<int> GetWindowSize() {
+            std::vector size = {windowWidth, windowHeight};
+            return size;
+        }
+
 
     private:
         Vector2 viewportResolution = {1000,1000};
