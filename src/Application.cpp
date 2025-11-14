@@ -20,6 +20,7 @@
 //  of states as defined in active ruleset
 // TODO: impl theming
 // TODO: impl fps counter+graph on stats window
+// TODO: impl simulation speed slider on viewport control panel window
 
 class ModelMatrixApp final : public Application
 {
@@ -61,8 +62,6 @@ class ModelMatrixApp final : public Application
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
             // Update simulation
             simulation.UpdateSimulationState();
-
-            ImGui::ShowDemoWindow();
 
             // menu bar for opening windows
             ImGui::BeginMainMenuBar();
