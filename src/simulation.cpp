@@ -139,7 +139,6 @@ void Simulation::UpdateSimulationState()
             for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
                 int currentState = activeGrid.read(x,y,z);
                 int numLiveNeighbors = CountLiveNeighbors(x,y,z);
-                // TODO: impl ruleset parser and stuff
 
                 // if alive
                 if (currentState == maxState)
@@ -197,7 +196,7 @@ void Simulation::DrawSimulationState()
     }
 
     // Draw bounding-box
-    DrawCubeWiresV(Vector3(0,0,0), Vector3(activeSimulationSpan, activeSimulationSpan, activeSimulationSpan),WHITE);
+    DrawCubeWiresV(Vector3(0,0,0), Vector3(activeSimulationSpan, activeSimulationSpan, activeSimulationSpan),boundingBoxColor);
 
     // Iterate through grid DS and draw the state
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
@@ -258,6 +257,17 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
         }
     }
 }
+
+void Simulation::ResizeSimulationSpan(int newSize)
+{
+    // TODO: impl simulation resizing - need to add resize method to grid
+    std::cout<<"--- Resizing simulation span ---"<<std::endl;
+    std::cout<<"newSize: "<<newSize<<std::endl;
+    activeSimulationSpan = newSize;
+    activeGrid.resize(newSize, newSize, newSize);
+    tempGrid.resize(newSize, newSize, newSize);
+}
+
 
 bool Simulation::IsSimulationRunning()
 {

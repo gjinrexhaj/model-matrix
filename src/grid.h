@@ -27,6 +27,12 @@ class Grid
             data[getIndex(xIndex, yIndex, zIndex)] = state;
         }
 
+        void resize(int x, int y, int z)
+        {
+            data.resize(x * y * z);
+            width = x, height = y, depth = z;
+        }
+
         unsigned int getWidth() const { return width; }
         unsigned int getHeight() const { return height; }
         unsigned int getDepth() const { return depth; }

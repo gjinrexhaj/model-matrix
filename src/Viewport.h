@@ -21,6 +21,8 @@ class Viewport
         int cameraFov;
         float panSensitivity;
         int scrollSpeed;
+        Color boundingBoxColor = WHITE;
+        Color backgroundColor = BLACK;
 
         // temp values for initialization
         RulesetNew viewportRuleset = RulesetNew("1/1/1",NeighborCountingRule::MOORE);
@@ -155,7 +157,7 @@ class Viewport
             }
 
             BeginTextureMode(ViewTexture);
-            ClearBackground(BLACK);
+            ClearBackground(backgroundColor);
             BeginMode3D(camera);
 
             // Begin draw model code

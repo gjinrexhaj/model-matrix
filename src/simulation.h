@@ -12,6 +12,8 @@
 class Simulation
 {
     public:
+        Color boundingBoxColor = WHITE;
+
         // Constructor
         Simulation(int simulationSpan, RulesetNew ruleset, std::pmr::vector<Color> stateColors) :
             activeSimulationSpan(simulationSpan), activeRuleset(ruleset),
@@ -26,6 +28,7 @@ class Simulation
         void UpdateSimulationState();
         void DrawSimulationState();
         void RandomizeSimulationState(float sparsity, int cubeRadius, bool additive);
+        void ResizeSimulationSpan(int newSize);
         bool IsSimulationRunning();
         void StartSimulation();
         void StopSimulation();
