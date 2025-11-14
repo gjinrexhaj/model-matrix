@@ -65,161 +65,7 @@ class ModelMatrixApp final : public Application
             if (showViewport)
             {
                 viewportWindow.Show();
-            }
-            // Live info window
-            if (showSimInfo)
-            {
-                ImGui::Begin("Simulation Info", &showSimInfo);
-                if (simulation.IsSimulationRunning())
-                {
-                    ImGui::Text("ENGINE RUNNING");
-                } else
-                {
-                    ImGui::Text("ENGINE IDLE");
-                }
-                ImGui::Text("FPS: %d", GetFPS());
-                ImGui::End();
-            }
-
-            // control panel window
-            if (showControlPanel)
-            {
-                ImGui::Begin("Control Panel", &showControlPanel);
-
-                // Row 1: Ruleset field
-                ImGui::Text("RULESET");
-                ImGui::BeginChild("rulesetContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
-                ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("Ruleset: ");
-                ImGui::SameLine();
-                ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
-                ImGui::TableNextColumn();
-                ImGui::Text("Counting Rule: ");
-                ImGui::SameLine();
-                ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                if (ImGui::Button("Apply Ruleset"))
-                {
-                    rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
-                    simulation.ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
-                }
-                ImGui::TableNextColumn();
-                std::string rsString = rulesetNew.GetRulesetAsString();
-                ImGui::Text("Active: ");
-                ImGui::SameLine();
-                ImGui::LabelText("##activeRS", rsString.c_str());
-                ImGui::EndTable();
-                ImGui::EndChild();
-
-                // Row 2: State color picker
-                currentActiveColors = simulation.GetStateColors();
-                ImGui::Text("STATE COLORS");
-                ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
-                ImGui::BeginTable("ColorControls", 1, ImGuiTableFlags_NoSavedSettings);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-
-                int  i = 0;
-                for (auto color : simulation.GetStateColors())
-                {
-                    colorStateLabelString = "State " + std::to_string(i+1) + " color: ";
-                    stateColor[0] = (float)color.r/255.0f;
-                    stateColor[1] = (float)color.g/255.0f;
-                    stateColor[2] = (float)color.b/255.0f;
-                    ImGui::PushID(i);
-                    ImGui::Text(colorStateLabelString.c_str());
-                    ImGui::SameLine();
-                    ImGui::ColorEdit3("##xx", stateColor, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float);
-                    i++;
-                    stateColor[0] *= 255.0f;
-                    stateColor[1] *= 255.0f;
-                    stateColor[2] *= 255.0f;
-                    Color custom = Color(stateColor[0], stateColor[1], stateColor[2], 255.0f);
-                    newColors.push_back(custom);
-                    ImGui::PopID();
-                }
-                simulation.ChangeStateColors(newColors);
-                newColors.clear();
-
-                ImGui::EndTable();
-                ImGui::EndChild();
-
-
-                // Row 3: Grid drawing
-                ImGui::Text("DRAW CELLS");
-                ImGui::BeginChild("drawellsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
-                ImGui::BeginTable("Drawcellstable", 2, ImGuiTableFlags_NoSavedSettings);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("RNG Sparsity ");
-                ImGui::SameLine();
-                ImGui::DragFloat("##dragFloatForSparity", &rngSparsity, 0.01f, 0.0f, 10.0f);
-                ImGui::Text("Cube Radius  ");
-                ImGui::SameLine();
-                ImGui::DragInt("##dragIntForRadius", &cubeRadius, 1, 0, 100);
-                ImGui::Text("Additive Fill");
-                ImGui::SameLine();
-                ImGui::Checkbox("##additiveFillToggle", &additiveFill);
-                ImGui::TableNextColumn();
-                ImGui::Text("PRESS 'R' FOR ONCE");
-                ImGui::Text( "HOLD 'T' FOR MULTIPLE");
-                ImGui::Text("PRESS 'C' TO CLEAR ALL");
-                if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
-                {
-                    simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
-                } else if (IsKeyPressed(KEY_C))
-                {
-                    simulation.ClearGrid();
-                }
-                ImGui::EndTable();
-                ImGui::EndChild();
-
-                // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
-                ImGui::Text("VIEWPORT SETTINGS");
-                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 140), ImGuiChildFlags_Border);
-                ImGui::BeginTable("Drawcellstable", 1, ImGuiTableFlags_NoSavedSettings);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("Resolution: ");
-                ImGui::SameLine();
-                ImGui::InputInt2("##resolutionInputInt2", resolution);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("Grid Size: ");
-                ImGui::SameLine();
-                ImGui::InputInt("##InputIntForSimSpan", &simulationSize);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("Background Color: ");
-                ImGui::SameLine();
-                ImGui::ColorEdit3("##ColorPickerLabelForVPBackground", backgroundColors);
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-                ImGui::Text("BoundBox Color: ");
-                ImGui::SameLine();
-                ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors);
-                if (ImGui::Button("Apply Viewport Changes"))
-                {
-                    // TODO: impl methods in viewport and sim to change these values
-                    viewportWindow.viewportResolution = Vector2(resolution[0], resolution[1]);
-                    simulation.ResizeSimulationSpan(simulationSize);
-                    Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
-                    Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
-                    viewportWindow.backgroundColor = newBackgroundColor;
-                    simulation.boundingBoxColor = newBoundboxColor;
-                }
-                ImGui::EndTable();
-                ImGui::EndChild();
-
-                // Row 5: Usage guide
-                ImGui::Text("USAGE GUIDE");
-                ImGui::BeginChild("usageGuideSettingsContainer", ImVec2(0, 80), ImGuiChildFlags_Border);
-                ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
-                ImGui::Text("RG_ARROW: FORWARDS (HOLD)");
-                ImGui::Text("LF_ARROW: BACKWARD (HOLD)");
+                // check for inputs
                 if (simulation.IsSimulationRunning())
                 {
                     if (IsKeyPressed(KEY_ENTER))
@@ -238,6 +84,171 @@ class ModelMatrixApp final : public Application
                         simulation.StopSimulation();
                     }
                 }
+            }
+            // Live info window
+            if (showSimInfo)
+            {
+                ImGui::Begin("Simulation Info", &showSimInfo);
+                if (simulation.IsSimulationRunning())
+                {
+                    ImGui::Text("ENGINE RUNNING");
+                } else
+                {
+                    ImGui::Text("ENGINE IDLE");
+                }
+                ImGui::Text("FPS: %d", GetFPS());
+                ImGui::End();
+            }
+
+            if (showUsageGuide)
+            {
+                // Row 5: Usage guide
+                ImGui::Begin("Usage Guide", &showUsageGuide);
+                ImGui::Text("ENTERKEY: PAUSE/PLAY SIMULATION (TOGGLE)");
+                ImGui::Text("RG_ARROW: ADVANCE (HOLD)");
+                ImGui::Text("LF_ARROW: REGRESS (HOLD)");
+                ImGui::End();
+            }
+
+            // control panel window
+            if (showControlPanel)
+            {
+                ImGui::Begin("Control Panel", &showControlPanel);
+
+                // Row 1: Ruleset field
+                ImGui::Text("RULESET");
+                ImGui::BeginChild("rulesetContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
+                if (ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Ruleset: ");
+                    ImGui::SameLine();
+                    ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Counting Rule: ");
+                    ImGui::SameLine();
+                    ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
+                    //ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    if (ImGui::Button("Apply Ruleset"))
+                    {
+                        rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                        simulation.ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                    }
+                    ImGui::TableNextColumn();
+                    std::string rsString = rulesetNew.GetRulesetAsString();
+                    ImGui::Text("Active: ");
+                    ImGui::SameLine();
+                    ImGui::LabelText("##activeRS", rsString.c_str());
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+                // Row 2: State color picker
+                currentActiveColors = simulation.GetStateColors();
+                ImGui::Text("STATE COLORS");
+                ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
+                if (ImGui::BeginTable("ColorControls", 1, ImGuiTableFlags_NoSavedSettings))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
+                    int  i = 0;
+                    for (auto color : simulation.GetStateColors())
+                    {
+                        colorStateLabelString = "State " + std::to_string(i+1) + " color: ";
+                        stateColor[0] = (float)color.r/255.0f;
+                        stateColor[1] = (float)color.g/255.0f;
+                        stateColor[2] = (float)color.b/255.0f;
+                        ImGui::PushID(i);
+                        ImGui::Text(colorStateLabelString.c_str());
+                        ImGui::SameLine();
+                        ImGui::ColorEdit3("##xx", stateColor, ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float);
+                        i++;
+                        stateColor[0] *= 255.0f;
+                        stateColor[1] *= 255.0f;
+                        stateColor[2] *= 255.0f;
+                        Color custom = Color(stateColor[0], stateColor[1], stateColor[2], 255.0f);
+                        newColors.push_back(custom);
+                        ImGui::PopID();
+                    }
+                    simulation.ChangeStateColors(newColors);
+                    newColors.clear();
+
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+
+                // Row 3: Grid drawing
+                ImGui::Text("DRAW CELLS");
+                ImGui::BeginChild("drawellsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
+                if (ImGui::BeginTable("Drawcellstable", 2, ImGuiTableFlags_NoSavedSettings))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("RNG Sparsity ");
+                    ImGui::SameLine();
+                    ImGui::DragFloat("##dragFloatForSparity", &rngSparsity, 0.01f, 0.0f, 10.0f);
+                    ImGui::Text("Cube Radius  ");
+                    ImGui::SameLine();
+                    ImGui::DragInt("##dragIntForRadius", &cubeRadius, 1, 0, 100);
+                    ImGui::Text("Additive Fill");
+                    ImGui::SameLine();
+                    ImGui::Checkbox("##additiveFillToggle", &additiveFill);
+                    ImGui::TableNextColumn();
+                    ImGui::Text("PRESS 'R' FOR ONCE");
+                    ImGui::Text( "HOLD 'T' FOR MULTIPLE");
+                    ImGui::Text("PRESS 'C' TO CLEAR ALL");
+                    if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
+                    {
+                        simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+                    } else if (IsKeyPressed(KEY_C))
+                    {
+                        simulation.ClearGrid();
+                    }
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+
+                // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
+                ImGui::Text("VIEWPORT SETTINGS");
+                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 140), ImGuiChildFlags_Border);
+                if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Resolution: ");
+                    ImGui::SameLine();
+                    ImGui::InputInt2("##resolutionInputInt2", resolution);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Grid Size: ");
+                    ImGui::SameLine();
+                    ImGui::InputInt("##InputIntForSimSpan", &simulationSize);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Background Color: ");
+                    ImGui::SameLine();
+                    ImGui::ColorEdit3("##ColorPickerLabelForVPBackground", backgroundColors);
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("BoundBox Color: ");
+                    ImGui::SameLine();
+                    ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors);
+                    if (ImGui::Button("Apply Viewport Changes"))
+                    {
+                        // TODO: impl methods in viewport and sim to change these values
+                        viewportWindow.viewportResolution = Vector2(resolution[0], resolution[1]);
+                        simulation.ResizeSimulationSpan(simulationSize);
+                        Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
+                        Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
+                        viewportWindow.backgroundColor = newBackgroundColor;
+                        simulation.boundingBoxColor = newBoundboxColor;
+                    }
+                    ImGui::EndTable();
+                }
                 ImGui::EndChild();
                 ImGui::End();
             }
@@ -250,6 +261,7 @@ class ModelMatrixApp final : public Application
         bool showViewport = true;
         bool showSimInfo = true;
         bool showControlPanel = true;
+        bool showUsageGuide = true;
         // Ruleset editor fields
         char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
         int selectedCountingRule = 0;
