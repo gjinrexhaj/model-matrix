@@ -16,7 +16,10 @@
 // TODO: FINISH GUI
 // TODO: FIX IMGUI SEGFAULT BUG
 // TODO: IMPL SIMSPACE RESIZING - impl accurate resize method in grid that preserves ordering
+// TODO: OPTIMIZE PROGRAM
 // TODO: GET RID OF OLD RULSET CLASS
+//TODO: handle error checking for when number of eleemnts in newStateColors != number
+// of states as defined in active ruleset
 
 class ModelMatrixApp final : public Application
 {
@@ -250,7 +253,7 @@ class ModelMatrixApp final : public Application
         bool showSimInfo = true;
         bool showControlPanel = true;
         // Ruleset editor fields
-        char rulesetField[CHAR_BUFFER_SIZE] = {};
+        char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
         int selectedCountingRule = 0;
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
         std::vector<NeighborCountingRule> neighborCountingRules =

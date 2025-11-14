@@ -13,9 +13,6 @@
 #include "raymath.h"
 
 
-//TODO: handle error checking for when number of eleemnts in newStateColors != number
-// of states as defined in active ruleset
-
 
 
 void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule)
