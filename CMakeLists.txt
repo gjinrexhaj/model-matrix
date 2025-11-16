@@ -56,22 +56,25 @@ add_library(ImGui STATIC
         ./external/rlImGui/rlImGui.cpp
 )
 
-# Link pre-built raylib and build ImGui libraries
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        raylib
-        ImGui
-)
 
-
-# Handle building for different platforms
+# Handle linking for different platforms
 if(WIN32)
     message("WIN32 detected! Linking Winmm")
-    target_link_libraries(${PROJECT_NAME} Winmm)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            raylib
+            ImGui
+            Winmm
+    )
 elseif(EMSCRIPTEN)
     message("Passing WASM-specific linkage flags")
     target_link_options(
             ${PROJECT_NAME}
             PRIVATE
             -sALLOW_MEMORY_GROWTH=1
+    )
+else()
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            raylib
+            ImGui
     )
 endif()
