@@ -56,9 +56,11 @@ class ModelMatrixApp final : public Application
             simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
 
             themes::load_ue();
+
             consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
             interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
             io.FontDefault = interFont;
+
 
 
         }
@@ -166,7 +168,6 @@ class ModelMatrixApp final : public Application
                     ImGui::Text("Counting Rule: ");
                     ImGui::SameLine();
                     ImGui::Combo("##CountingruleInput", &selectedCountingRule, availableCountingRules, IM_ARRAYSIZE(availableCountingRules));
-                    //ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     if (ImGui::Button("Apply Ruleset"))
                     {

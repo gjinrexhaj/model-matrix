@@ -63,8 +63,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 )
 
 
-# Set compile flags for WASM target during program linkage
-if(EMSCRIPTEN)
+# Handle building for different platforms
+if(WIN32)
+    message("WIN32 detected! Linking Winmm")
+    target_link_libraries(${PROJECT_NAME} Winmm)
+elseif(EMSCRIPTEN)
     message("Passing WASM-specific linkage flags")
     target_link_options(
             ${PROJECT_NAME}

@@ -7,8 +7,6 @@
 #include <iostream>
 #include <ostream>
 #include <random>
-#include <utility>
-#include <valarray>
 
 #include "raymath.h"
 
@@ -23,7 +21,7 @@ void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neig
 
 }
 
-void Simulation::ChangeStateColors(std::pmr::vector<Color> newStateColors)
+void Simulation::ChangeStateColors(const std::pmr::vector<Color>& newStateColors)
 {
     activeStateColors = newStateColors;
 }
@@ -182,6 +180,7 @@ void Simulation::UpdateSimulationState()
 void Simulation::DrawSimulationState()
 {
     // Center middle-most cube
+
     int rc = activeSimulationSpan/2;
     Vector3 translation3DOffset;
     if (activeSimulationSpan % 2)
@@ -312,4 +311,9 @@ void Simulation::LogSimulationState()
     // print running
     std::cout<<"running: " << running << std::endl;
     */
+}
+
+Simulation::~Simulation()
+{
+    std::cout<<"--- Simulation state destructor ---"<<std::endl;
 }
