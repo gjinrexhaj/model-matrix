@@ -17,7 +17,6 @@
 
 
 // TODO: OPTIMIZE PROGRAM
-// TODO: GET RID OF OLD RULSET CLASS
 // TODO: handle error checking for when number of eleemnts in newStateColors != number
 //  of states as defined in active ruleset
 // TODO: impl fps counter+graph on stats window
@@ -30,7 +29,6 @@ class ModelMatrixApp final : public Application
         ~ModelMatrixApp() override = default;
 
         // Create simulation members, initialize with default values
-        // DEAD DOES NOT COUNT AS A STATE
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
         Simulation simulation {70, rulesetNew, activeColors};
@@ -60,9 +58,6 @@ class ModelMatrixApp final : public Application
             consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
             interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
             io.FontDefault = interFont;
-
-
-
         }
 
         // User interface code here

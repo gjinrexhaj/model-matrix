@@ -280,39 +280,6 @@ void Simulation::StopSimulation()
     running = false;
 }
 
-void Simulation::LogSimulationState()
-{
-    /*
-    std::cout<<"---- LOGGING SIMULATION STATE ----"<<std::endl;
-    // print simSpan
-    std::cout<<"activeSimulationSpan: "<< activeSimulationSpan<<std::endl;
-    // print stateColors
-    std::cout<<"activeStateColors: ";
-    for (const Color col : activeStateColors) {
-        std::cout << "[R: " << (int)col.r << " G: " << (int)col.g << " B: " << (int)col.b << " A: " << (int)col.a << "] ";
-    }
-    std::cout << std::endl;
-    // print ruleset
-    std::cout <<"activeRuleset: ";
-    std::cout <<"[" << activeRuleset.survivalCondition << ", " << activeRuleset.birthCondition
-    << ", " << activeRuleset.numStates << ", ";
-    switch (activeRuleset.neighborCountingRule)
-    {
-        case NeighborCountingRule::MOORE:
-            std::cout << "MOORE";
-            break;
-        case NeighborCountingRule::VON_NEUMANN:
-            std::cout << "VON_NEUMANN";
-            break;
-        default:
-            std::cout << "NULL";
-    }
-    std::cout << "]" << std::endl;
-    // print running
-    std::cout<<"running: " << running << std::endl;
-    */
-}
-
 Simulation::~Simulation()
 {
     std::cout<<"--- Simulation state destructor ---"<<std::endl;

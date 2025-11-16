@@ -34,7 +34,6 @@ class Simulation
         bool IsSimulationRunning();
         void StartSimulation();
         void StopSimulation();
-        void LogSimulationState();
         // Destructor
         ~Simulation();
 

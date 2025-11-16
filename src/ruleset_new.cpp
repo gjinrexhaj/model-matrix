@@ -10,11 +10,10 @@
 
 
 // EXAMPLE RULE: "4/4/5/M"
-// EXAMPLE RULE: "4-2/4/5/M"
-// EXAMPLE RULE: "4-2/4,8,9/5/M"
-// EXAMPLE RULE: "4-2/4,8-10/5/M"
+// EXAMPLE RULE: "4,3,2/4/5/M"
+// EXAMPLE RULE: "4,3,2/4,8,9/5/VN"
+// EXAMPLE RULE: "4,3,2/4,8,9,10/5/M"
 
-// TODO: link new ruleset with program
 // TODO: add rule syntax checking (parse proper - numStates can only be one number)
 
 RulesetNew::RulesetNew(std::string rulesetParameterString, NeighborCountingRule neighborCountingRule) {
