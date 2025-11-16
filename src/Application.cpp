@@ -9,6 +9,7 @@
 #include "Viewport.h"
 #include "simulation.h"
 #include "themes.h"
+#include "rlgl.h"
 
 
 #define CHAR_BUFFER_SIZE 256

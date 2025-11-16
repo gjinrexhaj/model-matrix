@@ -14,6 +14,8 @@ class Simulation
     public:
         Color boundingBoxColor = WHITE;
 
+
+
         // Constructor
         Simulation(int simulationSpan, RulesetNew ruleset, std::pmr::vector<Color> stateColors) :
             activeSimulationSpan(simulationSpan), activeRuleset(ruleset),
