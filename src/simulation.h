@@ -3,18 +3,18 @@
 //
 
 #pragma once
+#include <thread>
 #include <vector>
 
 #include "raylib.h"
 #include "ruleset.h"
 #include "grid.h"
+#include "rlgl.h"
 
 class Simulation
 {
     public:
         Color boundingBoxColor = WHITE;
-
-
 
         // Constructor
         Simulation(int simulationSpan, RulesetNew ruleset, std::pmr::vector<Color> stateColors) :
@@ -23,7 +23,7 @@ class Simulation
             tempGrid(activeGrid) {}
         // public methods
         void ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule);
-        void ChangeStateColors(std::pmr::vector<Color> newStateColors);
+        void ChangeStateColors(const std::pmr::vector<Color>& newStateColors);
         std::pmr::vector<Color> GetStateColors();
         int CountLiveNeighbors(int x, int y, int z);
         void ClearGrid();
@@ -35,6 +35,8 @@ class Simulation
         void StartSimulation();
         void StopSimulation();
         void LogSimulationState();
+        // Destructor
+        ~Simulation();
 
     private:
         // private variables - initialized by constructor
