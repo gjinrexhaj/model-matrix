@@ -12,8 +12,6 @@ Currently, this program is able to simulate any user-specified 3D CA ruleset wit
 - Cell clearing and random generation
 - Zoom/pannable 3D viewport
 
-Video showcase available at [this link](https://www.youtube.com/watch?v=qYmX0MMCitA).
-
 GitHub serves as this project's primary platform for code, and collaboration.
 
 ![til](docs/gifs/showcase.gif)
