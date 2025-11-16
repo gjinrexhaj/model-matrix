@@ -33,6 +33,11 @@ class Grid
             width = x, height = y, depth = z;
         }
 
+        std::vector<int> getDataVector()
+        {
+            return data;
+        }
+
         unsigned int getWidth() const { return width; }
         unsigned int getHeight() const { return height; }
         unsigned int getDepth() const { return depth; }
