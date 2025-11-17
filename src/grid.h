@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <stdexcept>
 #include <vector>
 
 // TODO: impl dynamic resizing
