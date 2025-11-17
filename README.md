@@ -18,24 +18,23 @@ GitHub serves as this project's primary platform for code, and collaboration.
 
 ### RULESET GUIDE
 
-Similar to their 2D counterparts, 3D Cellular Automata uses one or more numerical value to determine the
+Similar to their 2D counterparts, 3D Cellular Automata uses one or more numerical values to determine the
 survival and birth conditions respectively. 
 
-For instance, the following ruleset
+Take the following ruleset as an example:
 ```
 3/4/7
 ```
-States that an alive cell will survive if it has exactly three alive neighbors, and an empty cell will become alive if
-it has exactly four alive neighbors. The third number defines that maximum state that a cell can have. When a cell is alive,
-it has state 7. If that cell is then marked for death (if it fails the survival condition), it will tick down until it reaches
+This states that an alive cell will survive if it has exactly three alive neighbors, and an empty cell will become alive if
+it has exactly four alive neighbors. The third number defines that maximum state that a cell can have. In this example, when a cell is alive,
+it has state 7. If that cell is then marked for death (when it fails the survival condition), it will tick down until it reaches
 state 0, where it becomes an empty cell. Cells that are actively dying do not count as alive neighbors.
 
 Each condition (except for maximum state) can have multiple values, which can be achieved by separating them via comma. 
-For example, the following ruleset
+For example, this following ruleset is valid:
 ```
 3,4/4,7/8
 ```
-is valid.
 
 3D Cellular Automata differs from the traditional 2D approach by introducing another dimension, which warrants the addition
 of another parameter: The neighbor counting rule. The two most common are Moore and Von Neumann. Moore neighbor counting includes 
