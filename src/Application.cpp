@@ -31,7 +31,9 @@ class ModelMatrixApp final : public Application
         // Create simulation members, initialize with default values
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
-        Simulation simulation {70, rulesetNew, activeColors};
+        //Simulation simulation {70, rulesetNew, activeColors};
+        Simulation* simulation = new Simulation(70, rulesetNew, activeColors);
+
         // Fonts
         ImFont* interFont;
         ImFont* consoleFont;
@@ -49,9 +51,9 @@ class ModelMatrixApp final : public Application
             io.ConfigWindowsMoveFromTitleBarOnly = true;
 
             // Start up viewport and simulation
-            viewportWindow.Setup(simulation, rulesetNew, activeColors);
-            newColors.reserve(simulation.GetStateColors().size());
-            simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+            viewportWindow.Setup(*simulation, rulesetNew, activeColors);
+            newColors.reserve(simulation->GetStateColors().size());
+            simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
 
             themes::load_ue();
 
@@ -65,22 +67,30 @@ class ModelMatrixApp final : public Application
         {
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-            // Update simulation and viewport
-            //std::thread simThread([this]()
-            //{
-            //    this->simulation.UpdateSimulationState();
-            //});
 
-            simulation.UpdateSimulationState();
-            viewportWindow.Update(simulation, rulesetNew, activeColors);
+            // TODO: figure out if we should run simulation or rendering on seperate thread
+            // start update simulation thread
+            std::thread simulateThread([this]()
+            {
+                this->simulation->UpdateSimulationState();
+            });
 
+            // update the viewport window
+            viewportWindow.Update(*simulation, rulesetNew, activeColors);
+
+            // Handle keybinds
+            ProcessKeyboardInput();
+
+            // join the simulation thread
+            simulateThread.join();
+
+            // draw the UI
             DrawMenuBar();
             DrawStatusWindow();
             DrawUsageGuideWindow();
             DrawAboutWindow();
             DrawControlPanelWindow();
             DrawViewportWindow();
-            ProcessKeyboardInput();
 
         }
 
@@ -119,7 +129,6 @@ class ModelMatrixApp final : public Application
         RenderTexture ViewTexture;
 
         // UI FUNCTIONS
-
         void DrawMenuBar()
         {
             ImGui::BeginMainMenuBar();
@@ -151,7 +160,7 @@ class ModelMatrixApp final : public Application
             {
                 ImGui::Begin("Status", &showSimStatus);
                 ImGui::PushFont(consoleFont);
-                if (simulation.IsSimulationRunning())
+                if (simulation->IsSimulationRunning())
                 {
                     ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
                 } else
@@ -224,7 +233,7 @@ class ModelMatrixApp final : public Application
                     if (ImGui::Button("Apply Ruleset"))
                     {
                         rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
-                        simulation.ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                        simulation->ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
                     }
                     ImGui::TableNextColumn();
                     rsString = rulesetNew.GetRulesetAsString();
@@ -236,7 +245,7 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
 
                 // Row 2: State color picker
-                currentActiveColors = simulation.GetStateColors();
+                currentActiveColors = simulation->GetStateColors();
                 ImGui::Text("STATE COLORS");
                 ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ColorControls", 1, ImGuiTableFlags_NoSavedSettings))
@@ -245,7 +254,7 @@ class ModelMatrixApp final : public Application
                     ImGui::TableNextColumn();
 
                     int  i = 0;
-                    for (auto color : simulation.GetStateColors())
+                    for (auto color : simulation->GetStateColors())
                     {
                         colorStateLabelString = "State " + std::to_string(i+1) + " color: ";
                         stateColor[0] = (float)color.r/255.0f;
@@ -263,7 +272,7 @@ class ModelMatrixApp final : public Application
                         newColors.push_back(custom);
                         ImGui::PopID();
                     }
-                    simulation.ChangeStateColors(newColors);
+                    simulation->ChangeStateColors(newColors);
                     newColors.clear();
 
                     ImGui::EndTable();
@@ -339,11 +348,11 @@ class ModelMatrixApp final : public Application
                     if (ImGui::Button("Apply Viewport Changes"))
                     {
                         viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
-                        simulation.ResizeSimulationSpan(simulationSize);
+                        simulation->ResizeSimulationSpan(simulationSize);
                         Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
                         Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
                         viewportWindow.backgroundColor = newBackgroundColor;
-                        simulation.boundingBoxColor = newBoundboxColor;
+                        simulation->boundingBoxColor = newBoundboxColor;
                     }
                     ImGui::EndTable();
                 }
@@ -360,30 +369,30 @@ class ModelMatrixApp final : public Application
         }
         void ProcessKeyboardInput()
         {
-            if (simulation.IsSimulationRunning())
+            if (simulation->IsSimulationRunning())
             {
                 if (IsKeyPressed(KEY_ENTER))
                 {
-                    simulation.StopSimulation();
+                    simulation->StopSimulation();
                 }
             } else
             {
                 if (IsKeyPressed(KEY_ENTER))
                 {
-                    simulation.StartSimulation();
+                    simulation->StartSimulation();
                 } else if (IsKeyDown(KEY_RIGHT))
                 {
-                    simulation.StartSimulation();
-                    simulation.UpdateSimulationState();
-                    simulation.StopSimulation();
+                    simulation->StartSimulation();
+                    simulation->UpdateSimulationState();
+                    simulation->StopSimulation();
                 }
             }
             if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
             {
-                simulation.RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+                simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
             } else if (IsKeyPressed(KEY_C))
             {
-                simulation.ClearGrid();
+                simulation->ClearGrid();
             }
         }
 };
