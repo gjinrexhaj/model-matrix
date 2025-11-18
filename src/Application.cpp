@@ -65,10 +65,63 @@ class ModelMatrixApp final : public Application
         {
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
-            // Update simulation
-            simulation.UpdateSimulationState();
+            // Update simulation and viewport
+            //std::thread simThread([this]()
+            //{
+            //    this->simulation.UpdateSimulationState();
+            //});
 
-            // menu bar for opening windows
+            simulation.UpdateSimulationState();
+            viewportWindow.Update(simulation, rulesetNew, activeColors);
+
+            DrawMenuBar();
+            DrawStatusWindow();
+            DrawUsageGuideWindow();
+            DrawAboutWindow();
+            DrawControlPanelWindow();
+            DrawViewportWindow();
+            ProcessKeyboardInput();
+
+        }
+
+    // Every var in private represents state
+    private:
+        // Window show flags
+        bool showViewport = true;
+        bool showSimStatus = true;
+        bool showControlPanel = true;
+        bool showUsageGuide = true;
+        bool showAbout = false;
+        // Ruleset editor fields
+        char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
+        int selectedCountingRule = 0;
+        const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
+        std::vector<NeighborCountingRule> neighborCountingRules =
+            {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
+        std::string rsString = "";
+        // Color editor fields
+        std::pmr::vector<Color> currentActiveColors;
+        std::pmr::vector<Color> newColors;
+        std::string colorStateLabelString;
+        float stateColor[3];
+        // Cell drawing fields
+        float rngSparsity = 8.9;
+        int cubeRadius = 30;
+        bool additiveFill = false;
+        // Viewport settings state value
+        int resolution[2] = {1000,1000};
+        int simulationSize = 70;
+        float backgroundColors[3] = {0,0,0};
+        float boundboxColors[3] = {1,1,1};
+        bool fitToWindow = false;
+        // Control panel state values
+        Viewport viewportWindow;
+        RenderTexture ViewTexture;
+
+        // UI FUNCTIONS
+
+        void DrawMenuBar()
+        {
             ImGui::BeginMainMenuBar();
             if (ImGui::MenuItem("Viewport"))
             {
@@ -91,8 +144,9 @@ class ModelMatrixApp final : public Application
                 showAbout = !showAbout;
             }
             ImGui::EndMainMenuBar();
-
-            // Live info window
+        }
+        void DrawStatusWindow()
+        {
             if (showSimStatus)
             {
                 ImGui::Begin("Status", &showSimStatus);
@@ -109,8 +163,9 @@ class ModelMatrixApp final : public Application
                 ImGui::PopFont();
                 ImGui::End();
             }
-
-            // Usage guide
+        }
+        void DrawUsageGuideWindow()
+        {
             if (showUsageGuide)
             {
                 // Row 5: Usage guide
@@ -127,8 +182,9 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("Example: '4/4,6/7'");
                 ImGui::End();
             }
-
-            // About window
+        }
+        void DrawAboutWindow()
+        {
             if (showAbout)
             {
                 ImGui::Begin("About", &showAbout);
@@ -143,8 +199,9 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
                 ImGui::End();
             }
-
-            // control panel window
+        }
+        void DrawControlPanelWindow()
+        {
             if (showControlPanel)
             {
                 ImGui::Begin("Control Panel", &showControlPanel);
@@ -293,15 +350,16 @@ class ModelMatrixApp final : public Application
                 ImGui::EndChild();
                 ImGui::End();
             }
-
-            // 3d viewport window
-            viewportWindow.Update(simulation, rulesetNew, activeColors);
+        }
+        void DrawViewportWindow()
+        {
             if (showViewport)
             {
                 viewportWindow.Show();
             }
-
-            // check for inputs
+        }
+        void ProcessKeyboardInput()
+        {
             if (simulation.IsSimulationRunning())
             {
                 if (IsKeyPressed(KEY_ENTER))
@@ -328,42 +386,6 @@ class ModelMatrixApp final : public Application
                 simulation.ClearGrid();
             }
         }
-
-    // Every var in private represents state
-    private:
-        // Window show flags
-        bool showViewport = true;
-        bool showSimStatus = true;
-        bool showControlPanel = true;
-        bool showUsageGuide = true;
-        bool showAbout = false;
-        // Ruleset editor fields
-        char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
-        int selectedCountingRule = 0;
-        const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
-        std::vector<NeighborCountingRule> neighborCountingRules =
-            {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
-        std::string rsString = "";
-        // Color editor fields
-        std::pmr::vector<Color> currentActiveColors;
-        std::pmr::vector<Color> newColors;
-        std::string colorStateLabelString;
-        float stateColor[3];
-        // Cell drawing fields
-        float rngSparsity = 8.9;
-        int cubeRadius = 30;
-        bool additiveFill = false;
-        // Viewport settings state value
-        int resolution[2] = {1000,1000};
-        int simulationSize = 70;
-        float backgroundColors[3] = {0,0,0};
-        float boundboxColors[3] = {1,1,1};
-        bool fitToWindow = false;
-
-
-        // Control panel state values
-        Viewport viewportWindow;
-        RenderTexture ViewTexture;
 };
 
 

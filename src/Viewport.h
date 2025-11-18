@@ -151,7 +151,7 @@ class Viewport
 
         void HandleCameraControls()
         {
-            camera.position += Vector3(0, 1, 0);
+            //camera.position += Vector3(0, 1, 0);
 
             // Only control camera if it isn't at the origin
             Vector2 mouseDelta = GetMouseDelta();
