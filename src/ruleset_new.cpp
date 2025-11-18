@@ -56,9 +56,27 @@ RulesetNew::RulesetNew(std::string rulesetParameterString, NeighborCountingRule 
     currentCondition.push_back(pushedValue);
     conditionCollection.push_back(currentCondition);
 
-    survivalConditions = {conditionCollection.at(0)};
-    birthConditions = {conditionCollection.at(1)};
-    numStates = {conditionCollection.at(2)};
+    try
+    {
+        survivalConditions = {conditionCollection.at(0)};
+    } catch (std::exception &e)
+    {
+        throw e;
+    }
+    try
+    {
+        birthConditions = {conditionCollection.at(1)};
+    } catch (std::exception &e)
+    {
+        throw e;
+    }
+    try
+    {
+        numStates = {conditionCollection.at(2)};
+    } catch (std::exception &e)
+    {
+        throw e;
+    }
 }
 
 std::string RulesetNew::GetRulesetAsString() {

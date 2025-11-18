@@ -16,8 +16,14 @@
 void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule)
 {
     std::cout<<"Changing ruleset with parameter [" + newRuleset + "]"<<std::endl;
-    activeRuleset = RulesetNew(newRuleset, neighborCountingRule);
-    activeStateColors.resize(activeRuleset.numStates.at(0));
+    try
+    {
+        activeRuleset = RulesetNew(newRuleset, neighborCountingRule);
+        activeStateColors.resize(activeRuleset.numStates.at(0));
+    } catch (std::exception &e)
+    {
+        std::cout<<e.what()<<std::endl;
+    }
 
 }
 

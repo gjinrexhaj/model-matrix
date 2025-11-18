@@ -109,6 +109,7 @@ class ModelMatrixApp final : public Application
         std::vector<NeighborCountingRule> neighborCountingRules =
             {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
         std::string rsString = "";
+        bool currentRulsetIsInvalid = false;
         // Color editor fields
         std::pmr::vector<Color> currentActiveColors;
         std::pmr::vector<Color> newColors;
@@ -224,7 +225,10 @@ class ModelMatrixApp final : public Application
                     ImGui::TableNextColumn();
                     ImGui::Text("Ruleset: ");
                     ImGui::SameLine();
-                    ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE);
+                    if (ImGui::InputText("##RulesetInput", rulesetField, CHAR_BUFFER_SIZE))
+                    {
+                        currentRulsetIsInvalid = false;
+                    };
                     ImGui::TableNextColumn();
                     ImGui::Text("Counting Rule: ");
                     ImGui::SameLine();
@@ -232,14 +236,29 @@ class ModelMatrixApp final : public Application
                     ImGui::TableNextColumn();
                     if (ImGui::Button("Apply Ruleset"))
                     {
-                        rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                        try
+                        {
+                            rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                        } catch (std::exception e)
+                        {
+                            currentRulsetIsInvalid = true;
+                            std::cerr << e.what() << std::endl;
+                            std::cout << "ruleset remains unchanged!"<< std::endl;
+                        }
                         simulation->ChangeRuleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                        std::cout << "ruleset applied successfully!" << std::endl;
                     }
                     ImGui::TableNextColumn();
                     rsString = rulesetNew.GetRulesetAsString();
                     ImGui::Text("Active: ");
                     ImGui::SameLine();
-                    ImGui::LabelText("##activeRS", rsString.c_str());
+                    if (currentRulsetIsInvalid)
+                    {
+                        ImGui::TextColored(ImVec4(255,0,0,255),"INVALID INPUT");
+                    } else
+                    {
+                        ImGui::LabelText("##activeRS", rsString.c_str());
+                    }
                     ImGui::EndTable();
                 }
                 ImGui::EndChild();
