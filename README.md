@@ -8,7 +8,7 @@ is intended to build upon [previous work](https://github.com/gjinrexhaj/cellular
 
 Currently, this program is able to simulate any user-specified 3D CA ruleset with the following features:
 - Customizable live environment and simulation ruleset
-- Customizable colors for each cell stat
+- Customizable colors for each cell state
 - Cell clearing and random generation
 - Zoom/pannable 3D viewport
 
