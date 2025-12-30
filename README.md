@@ -94,7 +94,7 @@ To keep our work organized and manageable, we'll adhere to these conventions:
 To keep things nice and organized, please prepend a relevant **type** seen
 in the table below to your commit message.
 
-Example:  ```feat(gui): Implement neural vetwork visualizer```
+Example:  ```feat(gui): Implement neural network visualizer```
 
 | Type      | Purpose |
 |-----------|---------|
