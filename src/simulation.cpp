@@ -215,7 +215,7 @@ void Simulation::DrawSimulationState()
                     if (currentCellState > activeRuleset.numStates.at(0))
                     {
                         DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                            WHITE);
+                            Color(255, 255, 255, 127));
                     } else
                     {
                         DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,

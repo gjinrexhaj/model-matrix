@@ -42,9 +42,16 @@ include_directories(
 file(GLOB_RECURSE SOURCES src/*.cpp)
 file(GLOB_RECURSE HEADERS src/*.h src/*.hpp)
 
+# Store commonly used paths in vars
+set(ICON_FILE "AppIcon.icns")
+set(ICON_PATH "./res/icon/${ICON_FILE}")
+set(APP_FONTS
+        "./res/fonts/Inter-Regular.ttf"
+        "./res/fonts/JetBrainsMono-Regular.ttf"
+)
 
 # Create executable with all sources and headers
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${ICON_PATH} ${APP_FONTS})
 
 # build imgui library
 add_library(ImGui STATIC
@@ -56,6 +63,24 @@ add_library(ImGui STATIC
         ./external/rlImGui/rlImGui.cpp
 )
 
+# Build MacOS app bundle if applicable
+if (APPLE)
+    message("Building macOS app bundle")
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+            MACOSX_BUNDLE TRUE
+            MACOSX_BUNDLE_ICON_FILE ${ICON_FILE}
+    )
+
+    message("Adding icon to bundle resource")
+    set_source_files_properties(${ICON_PATH} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+    )
+
+    message("Adding fonts to bundle resource")
+    set_source_files_properties(${APP_FONTS} PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Resources"
+    )
+endif()
 
 # Handle linking for different platforms
 if(WIN32)
@@ -71,6 +96,12 @@ elseif(EMSCRIPTEN)
             ${PROJECT_NAME}
             PRIVATE
             -sALLOW_MEMORY_GROWTH=1
+    )
+elseif(APPLE)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            raylib
+            ImGui
+            "-framework CoreFoundation"
     )
 else()
     target_link_libraries(${PROJECT_NAME} PRIVATE

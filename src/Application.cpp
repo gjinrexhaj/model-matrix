@@ -10,7 +10,11 @@
 #include "simulation.h"
 #include "themes.h"
 #include "rlgl.h"
+#include "IconsFontAwesome6.h"
 
+#ifdef __APPLE__
+    #include "BundleHelper.h"
+#endif
 
 #define CHAR_BUFFER_SIZE 256
 
@@ -42,7 +46,7 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
-            SetTargetFPS(60);
+            SetTargetFPS(600);
             rlImGuiSetup(true);
 
             ImGuiIO& io = ImGui::GetIO();
@@ -57,8 +61,16 @@ class ModelMatrixApp final : public Application
 
             themes::load_ue();
 
+#ifdef __APPLE__
+            std::string interPath = getResourcePath("Inter-Regular", "ttf");
+            std::string jbrPath = getResourcePath("JetBrainsMono-Regular", "ttf");
+            consoleFont = io.Fonts->AddFontFromFileTTF(jbrPath.c_str(), 15);;
+            interFont = io.Fonts->AddFontFromFileTTF(interPath.c_str(), 14);
+#else
             consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
             interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
+#endif
+
             io.FontDefault = interFont;
         }
 
@@ -169,7 +181,8 @@ class ModelMatrixApp final : public Application
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE IDLE");
                 }
                 ImGui::Text("FPS: %d", GetFPS());
-                // TODO: add more status info, like GL version being used, etc
+                ImGui::Text("OpenGL %i", rlGetVersion());
+                ImGui::Text("Raylib %i.%i", RAYLIB_VERSION_MAJOR, RAYLIB_VERSION_MINOR);
                 ImGui::PopFont();
                 ImGui::End();
             }
