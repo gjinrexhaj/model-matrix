@@ -8,7 +8,7 @@ is intended to build upon [previous work](https://github.com/gjinrexhaj/cellular
 
 Currently, this program is able to simulate any user-specified 3D CA ruleset with the following features:
 - Customizable live environment and simulation ruleset
-- Customizable colors for each cell stat
+- Customizable colors for each cell state
 - Cell clearing and random generation
 - Zoom/pannable 3D viewport
 
@@ -94,7 +94,7 @@ To keep our work organized and manageable, we'll adhere to these conventions:
 To keep things nice and organized, please prepend a relevant **type** seen
 in the table below to your commit message.
 
-Example:  ```feat(gui): Implement neural vetwork visualizer```
+Example:  ```feat(gui): Implement neural network visualizer```
 
 | Type      | Purpose |
 |-----------|---------|
