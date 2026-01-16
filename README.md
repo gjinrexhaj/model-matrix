@@ -17,6 +17,7 @@ GitHub serves as this project's primary platform for code, and collaboration.
 Here's a link to a short [video showcase](https://www.youtube.com/watch?v=JF5nxRMGOzI) on YT.
 
 ![til](docs/gifs/showcase.gif)
+![](docs/images/magma.png)
 
 ### RULESET GUIDE
 
