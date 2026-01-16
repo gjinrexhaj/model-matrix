@@ -1,19 +1,27 @@
 //
-// Created by Gjin on 10/28/25.
+// Created by Gjin on 11/12/25.
 //
 
 #pragma once
-#include "ruleset_new.h"
+#include <string>
+#include <vector>
 
-class Ruleset
+
+enum class NeighborCountingRule: int
 {
-    public:
-        int survivalCondition;
-        int birthCondition;
-        int numStates;
-        NeighborCountingRule neighborCountingRule;
+    MOORE = 0,
+    VON_NEUMANN = 1,
+};
 
-        Ruleset(int survivalCondition, int birthCondition, int numStates, NeighborCountingRule neighborCountingRule) :
-            survivalCondition(survivalCondition), birthCondition(birthCondition),
-            numStates(numStates), neighborCountingRule(neighborCountingRule) {};
+class RulesetNew
+{
+public:
+    std::vector<int> survivalConditions;
+    std::vector<int> birthConditions;
+    std::vector<int> numStates;
+    NeighborCountingRule neighborCountingRule;
+
+    RulesetNew(std::string rulesetParameterString, NeighborCountingRule neighborCountingRule);
+
+    std::string GetRulesetAsString();
 };

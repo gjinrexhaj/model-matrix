@@ -9,8 +9,7 @@
 #include <random>
 
 #include "raymath.h"
-
-
+#include "ruleset.h"
 
 
 void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule)

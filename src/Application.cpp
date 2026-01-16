@@ -5,7 +5,7 @@
 #include "Application.h"
 
 #include "imgui_internal.h"
-#include "ruleset_new.h"
+#include "ruleset.h"
 #include "Viewport.h"
 #include "simulation.h"
 #include "themes.h"
