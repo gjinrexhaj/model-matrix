@@ -21,7 +21,7 @@ public:
     std::vector<int> numStates;
     NeighborCountingRule neighborCountingRule;
 
-    RulesetNew(std::string rulesetParameterString, NeighborCountingRule neighborCountingRule);
+    RulesetNew(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule);
 
-    std::string GetRulesetAsString();
+    std::string GetRulesetAsString() const;
 };

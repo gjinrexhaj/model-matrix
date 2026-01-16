@@ -12,7 +12,7 @@
 #include "ruleset.h"
 
 
-void Simulation::ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule)
+void Simulation::ChangeRuleset(const std::string& newRuleset, const NeighborCountingRule neighborCountingRule)
 {
     std::cout<<"Changing ruleset with parameter [" + newRuleset + "]"<<std::endl;
     try

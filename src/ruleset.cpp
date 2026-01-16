@@ -16,11 +16,11 @@
 
 // TODO: add rule syntax checking (parse proper - numStates can only be one number)
 
-RulesetNew::RulesetNew(std::string rulesetParameterString, NeighborCountingRule neighborCountingRule) {
+RulesetNew::RulesetNew(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule) {
     // Parse string
     this->neighborCountingRule = neighborCountingRule;
 
-    std::string currentValueString = "";
+    std::string currentValueString;
     std::vector<std::vector<int>> conditionCollection;
     std::vector<int> currentCondition;
 
@@ -79,7 +79,8 @@ RulesetNew::RulesetNew(std::string rulesetParameterString, NeighborCountingRule 
     }
 }
 
-std::string RulesetNew::GetRulesetAsString() {
+std::string RulesetNew::GetRulesetAsString() const
+{
 
 
     std::string sc;

@@ -120,7 +120,7 @@ class ModelMatrixApp final : public Application
         const char* availableCountingRules[2] = {"Moore", "Von Neumann"};
         std::vector<NeighborCountingRule> neighborCountingRules =
             {NeighborCountingRule::MOORE, NeighborCountingRule::VON_NEUMANN};
-        std::string rsString = "";
+        std::string rsString;
         bool currentRulsetIsInvalid = false;
         // Color editor fields
         std::pmr::vector<Color> currentActiveColors;
@@ -252,7 +252,7 @@ class ModelMatrixApp final : public Application
                         try
                         {
                             rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
-                        } catch (std::exception e)
+                        } catch (std::exception &e)
                         {
                             currentRulsetIsInvalid = true;
                             std::cerr << e.what() << std::endl;
@@ -399,7 +399,7 @@ class ModelMatrixApp final : public Application
                 viewportWindow.Show();
             }
         }
-        void ProcessKeyboardInput()
+        void ProcessKeyboardInput() const
         {
             if (simulation->IsSimulationRunning())
             {

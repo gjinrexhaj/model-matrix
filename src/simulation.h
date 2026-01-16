@@ -4,6 +4,7 @@
 
 #pragma once
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include "raylib.h"
@@ -18,11 +19,11 @@ class Simulation
 
         // Constructor
         Simulation(int simulationSpan, RulesetNew ruleset, std::pmr::vector<Color> stateColors) :
-            activeSimulationSpan(simulationSpan), activeRuleset(ruleset),
-            activeStateColors(stateColors), activeGrid(simulationSpan, simulationSpan, simulationSpan),
+            activeSimulationSpan(simulationSpan), activeRuleset(std::move(ruleset)),
+            activeStateColors(std::move(stateColors)), activeGrid(simulationSpan, simulationSpan, simulationSpan),
             tempGrid(activeGrid) {}
         // public methods
-        void ChangeRuleset(std::string newRuleset, NeighborCountingRule neighborCountingRule);
+        void ChangeRuleset(const std::string& newRuleset, NeighborCountingRule neighborCountingRule);
         void ChangeStateColors(const std::pmr::vector<Color>& newStateColors);
         std::pmr::vector<Color> GetStateColors();
         int CountLiveNeighbors(int x, int y, int z);
