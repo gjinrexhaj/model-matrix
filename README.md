@@ -14,8 +14,7 @@ Currently, this program is able to simulate any user-specified 3D CA ruleset wit
 
 GitHub serves as this project's primary platform for code, and collaboration.
 
-Here's a link to a short [video showcase](https://www.youtube.com/watch?v=JF5nxRMGOzI) on YT.
-
+Here's a link to a short [video showcase](https://www.youtube.com/watch?v=bnL7SvX4Z-s) on YT.
 ![til](docs/gifs/showcase.gif)
 ![](docs/images/magma.png)
 
