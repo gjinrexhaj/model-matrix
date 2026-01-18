@@ -213,7 +213,7 @@ class ModelMatrixApp final : public Application
                 ImGui::Begin("About", &showAbout);
                 ImGui::BeginChild("Contents", ImVec2(0, 0), true);
                 ImGui::Text("MODEL-MATRIX");
-                ImGui::Text("dev 0.7");
+                ImGui::Text("dev 0.8");
                 ImGui::Text("A 3D Cellular Automata engine, "
                             "\nimplemented fully in C/C++"
                             "\n"
