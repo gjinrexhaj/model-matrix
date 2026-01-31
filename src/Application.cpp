@@ -4,15 +4,13 @@
 
 #include "Application.h"
 
-#include "imgui_internal.h"
 #include "ruleset.h"
 #include "Viewport.h"
 #include "simulation.h"
 #include "themes.h"
 #include "rlgl.h"
-#include "IconsFontAwesome6.h"
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
     #include "BundleHelper.h"
 #endif
 
@@ -20,11 +18,9 @@
 
 
 
-// TODO: OPTIMIZE PROGRAM
-// TODO: handle error checking for when number of eleemnts in newStateColors != number
-//  of states as defined in active ruleset
-// TODO: impl fps counter+graph on stats window
+// TODO: OPTIMIZE RENDERING
 // TODO: impl simulation speed slider on viewport control panel window
+// TODO: impl grid dynamic resizing
 
 class ModelMatrixApp final : public Application
 {
@@ -46,7 +42,7 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
-            SetTargetFPS(600);
+            SetTargetFPS(60);
             rlImGuiSetup(true);
 
             ImGuiIO& io = ImGui::GetIO();
@@ -61,7 +57,7 @@ class ModelMatrixApp final : public Application
 
             themes::load_ue();
 
-#ifdef __APPLE__
+#if  defined(__APPLE__) && !defined(__EMSCRIPTEN__)
             std::string interPath = getResourcePath("Inter-Regular", "ttf");
             std::string jbrPath = getResourcePath("JetBrainsMono-Regular", "ttf");
             consoleFont = io.Fonts->AddFontFromFileTTF(jbrPath.c_str(), 15);;
@@ -112,7 +108,7 @@ class ModelMatrixApp final : public Application
         bool showViewport = true;
         bool showSimStatus = true;
         bool showControlPanel = true;
-        bool showUsageGuide = true;
+        bool showUsageGuide = false;
         bool showAbout = false;
         // Ruleset editor fields
         char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
