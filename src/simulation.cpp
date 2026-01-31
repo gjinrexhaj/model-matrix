@@ -7,10 +7,38 @@
 #include <iostream>
 #include <ostream>
 #include <random>
+#include <thread>
+#include <vector>
+#include <algorithm>
 
 #include "raymath.h"
 #include "ruleset.h"
 
+
+namespace
+{
+    // 26 neighbors (Moore)
+    constexpr int mooreDeltas[26][3] = {
+        {-1,-1,-1},{0,-1,-1},{1,-1,-1},
+        {-1, 0,-1},{0, 0,-1},{1, 0,-1},
+        {-1, 1,-1},{0, 1,-1},{1, 1,-1},
+
+        {-1,-1, 0},{0,-1, 0},{1,-1, 0},
+        {-1, 0, 0},           {1, 0, 0},
+        {-1, 1, 0},{0, 1, 0},{1, 1, 0},
+
+        {-1,-1, 1},{0,-1, 1},{1,-1, 1},
+        {-1, 0, 1},{0, 0, 1},{1, 0, 1},
+        {-1, 1, 1},{0, 1, 1},{1, 1, 1}
+    };
+
+    // 6 neighbors (Von Neumann)
+    constexpr int vonNeumannDeltas[6][3] = {
+        { 1, 0, 0}, {-1, 0, 0},
+        { 0, 1, 0}, { 0,-1, 0},
+        { 0, 0, 1}, { 0, 0,-1}
+    };
+}
 
 void Simulation::ChangeRuleset(const std::string& newRuleset, const NeighborCountingRule neighborCountingRule)
 {
@@ -36,81 +64,49 @@ std::pmr::vector<Color> Simulation::GetStateColors()
     return activeStateColors;
 }
 
-int Simulation::CountLiveNeighbors(int x, int y, int z)
+inline int Simulation::CountLiveNeighbors(int x, int y, int z)
 {
-    int liveNeighbors = 0;
-    std::vector<std::tuple<int, int, int>> neighborOffsets;
+    int count = 0;
 
-    //        Moore: all neighbors
-    // Von Neumann: all neighbors with intersecting faces
+    // cache grid dimensions
+    const int w = activeGrid.getWidth();
+    const int h = activeGrid.getHeight();
+    const int d = activeGrid.getDepth();
+
+    int maxState = activeRuleset.numStates.at(0);
+
+    const int (*deltas)[3];
+    int deltaCount;
+
     if (activeRuleset.neighborCountingRule == NeighborCountingRule::MOORE)
     {
-        neighborOffsets = {
-            //x, y, z - POSITIVE
-            { 0, 0, 1 },
-            { 0, 1, 0 },
-            { 0, 1, 1 },
-            { 1, 0, 0 },
-            { 1, 0, 1 },
-            { 1, 1, 0 },
-            { 1, 1, 1 },
-            //x, y, z - NEGATIVE
-            { 0, 0,-1 },
-            { 0,-1, 0 },
-            { 0,-1,-1 },
-            {-1, 0, 0 },
-            {-1, 0,-1 },
-            {-1,-1, 0 },
-            {-1,-1,-1 },
-            //x, y, z - POS/NEG
-            { 1, 1,-1 },
-            { 1,-1, 1 },
-            { 1,-1,-1 },
-            {-1, 1, 1 },
-            {-1, 1,-1 },
-            {-1,-1, 1 },
-            // ALL THREE VALUES CASES
-            { 0,-1, 1 },
-            {-1, 1, 0 },
-            { 1, 0,-1 },
-            { 1,-1, 0 },
-            {-1, 0, 1 },
-            { 0, 1,-1 }
-        };
-    }
-    else if (activeRuleset.neighborCountingRule == NeighborCountingRule::VON_NEUMANN)
+        deltas = mooreDeltas;
+        deltaCount = 26;
+    } else // Von Neumann
     {
-        neighborOffsets = {
-            //x, y, z - POSITIVE
-            { 0, 0, 1 },
-            { 0, 1, 0 },
-            { 1, 0, 0 },
-            //x, y, z - NEGATIVE
-            { 0, 0,-1 },
-            { 0,-1, 0 },
-            {-1, 0, 0 },
-        };
+        deltas = vonNeumannDeltas;
+        deltaCount = 6;
     }
 
-    for (const auto& [x_offset, y_offset, z_offset] : neighborOffsets)
+    for (int i = 0; i < 26; ++i)
     {
-        // Add grid wrapping behavior
-        int neighborX = (x + x_offset + activeSimulationSpan) % activeSimulationSpan;
-        int neighborY = (y + y_offset + activeSimulationSpan) % activeSimulationSpan;
-        int neighborZ = (z + z_offset + activeSimulationSpan) % activeSimulationSpan;
+        const int nx = x + deltas[i][0];
+        const int ny = y + deltas[i][1];
+        const int nz = z + deltas[i][2];
 
-        // Get grid value of neighbor being counted
-        int gridValue = activeGrid.read(neighborX, neighborY, neighborZ);
-
-        // Only count as neighbor if it's at max state
-        if (gridValue == activeRuleset.numStates.at(0))
+        // single compound bounds check
+        if ((unsigned)nx < (unsigned)w &&
+            (unsigned)ny < (unsigned)h &&
+            (unsigned)nz < (unsigned)d)
         {
-            liveNeighbors++;
+            count += (activeGrid.read(nx, ny, nz) == maxState);
         }
     }
 
-    return liveNeighbors;
+    return count;
 }
+
+
 
 void Simulation::ClearGrid()
 {
@@ -127,65 +123,98 @@ void Simulation::ClearGrid()
 void Simulation::UpdateSimulationState()
 {
     if (!running)
-    {
-        return;
-    }
+        return; // early ret if not running
+
+    // cache grid sizes
+    unsigned int depth = activeGrid.getDepth();
+    unsigned int height = activeGrid.getHeight();
+    unsigned int width = activeGrid.getWidth();
 
     int maxState = activeRuleset.numStates.at(0);
 
-    // Iterate through grid, apply ruleset and alter a temporary grid
-    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x) {
-                int currentState = activeGrid.read(x,y,z);
-                int numLiveNeighbors = CountLiveNeighbors(x,y,z);
+    // determing number of threads
+    unsigned int numThreads = std::thread::hardware_concurrency();
+    if (numThreads == 0) numThreads = 4; // fallback
 
-                // if alive
-                if (currentState == maxState)
+    // anonymous func which takes a ranze of Z layers to compute
+    auto processSlice = [&](unsigned int zStart, unsigned int zEnd)
+    {
+        // loop over slize of z layers assigned to current thread
+        for (unsigned int z = zStart; z < zEnd; ++z)
+        {
+            for (unsigned int y = 0; y < height; ++y)
+            {
+                for (unsigned int x = 0; x < width; ++x)
                 {
-                    // check the survival condition(s)
-                    bool metCondition = false;
-                    for (auto survivalCondition : activeRuleset.survivalConditions)
+                    int currentState = activeGrid.read(x,y,z);
+                    int numLiveNeighbors = CountLiveNeighbors(x,y,z);
+
+                    // apply logic in accordance to the ruleset
+                    if (currentState == maxState)
                     {
-                        if (numLiveNeighbors == survivalCondition)
+                        bool metCondition = false;
+                        for (auto survivalCondition : activeRuleset.survivalConditions)
                         {
-                            tempGrid.write(x,y,z,maxState);
-                            metCondition = true;
+                            if (numLiveNeighbors == survivalCondition)
+                            {
+                                tempGrid.write(x,y,z,maxState);
+                                metCondition = true;
+                            }
+                        }
+                        if (!metCondition)
+                        {
+                            tempGrid.write(x,y,z,maxState-1);
                         }
                     }
-                    if (!metCondition)
+                    else if (currentState > 0)
                     {
-                        tempGrid.write(x,y,z,maxState-1);
+                        tempGrid.write(x,y,z,currentState-1);
                     }
-                }
-                // if decaying (still shows, but is effectively dead
-                else if (currentState > 0)
-                {
-                    tempGrid.write(x,y,z,currentState-1);
-                }
-                // if dead, check the birth condition
-                else
-                {
-                    for (auto birthCondition : activeRuleset.birthConditions)
+                    else
                     {
-                        if (numLiveNeighbors == birthCondition)
+                        for (auto birthCondition : activeRuleset.birthConditions)
                         {
-                            tempGrid.write(x,y,z,maxState);
+                            if (numLiveNeighbors == birthCondition)
+                            {
+                                tempGrid.write(x,y,z,maxState);
+                            }
                         }
                     }
                 }
             }
         }
+    };
+
+    // launch all the threads
+    std::vector<std::thread> threads;
+    unsigned int sliceSize = (depth + numThreads - 1) / numThreads; // ceiling division
+
+    // for each thread, compute start/end of z-slice
+    for (unsigned int t = 0; t < numThreads; ++t)
+    {
+        unsigned int zStart = t * sliceSize;
+        unsigned int zEnd = std::min(zStart + sliceSize, depth);
+        if (zStart >= depth) break; // no work for this thread
+
+        threads.emplace_back(processSlice, zStart, zEnd);
     }
 
-    // copy temporary grid into active grid afterwards
+    // join all the threads
+    for (auto& th : threads) th.join();
+
+    // Copy temporary grid into active grid
     activeGrid = tempGrid;
 }
 
+
 void Simulation::DrawSimulationState()
 {
-    // Center middle-most cube
+    const int depth = activeGrid.getDepth();
+    const int height = activeGrid.getHeight();
+    const int width = activeGrid.getWidth();
 
+
+    // Center middle-most cube
     int rc = activeSimulationSpan/2;
     Vector3 translation3DOffset;
     if (activeSimulationSpan % 2)
@@ -200,9 +229,9 @@ void Simulation::DrawSimulationState()
     DrawCubeWiresV(Vector3(0,0,0), Vector3(activeSimulationSpan, activeSimulationSpan, activeSimulationSpan),boundingBoxColor);
 
     // Iterate through grid DS and draw the state
-    for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
-        for (unsigned int y = 0; y < activeGrid.getHeight(); ++y) {
-            for (unsigned int x = 0; x < activeGrid.getWidth(); ++x)
+    for (unsigned int z = 0; z < depth; ++z) {
+        for (unsigned int y = 0; y < height; ++y) {
+            for (unsigned int x = 0; x < width; ++x)
             {
                 // Get cell in question
                 int currentCellState = activeGrid.read(x,y,z);
@@ -261,7 +290,6 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
 
 void Simulation::ResizeSimulationSpan(int newSize)
 {
-    // TODO: impl simulation resizing - need to add resize method to grid
     std::cout<<"--- Resizing simulation span ---"<<std::endl;
     std::cout<<"newSize: "<<newSize<<std::endl;
     activeSimulationSpan = newSize;

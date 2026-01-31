@@ -46,5 +46,4 @@ class Simulation
         bool running = false;
         Grid activeGrid;
         Grid tempGrid;
-
 };
