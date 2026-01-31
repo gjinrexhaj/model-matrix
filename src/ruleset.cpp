@@ -14,8 +14,6 @@
 // EXAMPLE RULE: "4,3,2/4,8,9/5/VN"
 // EXAMPLE RULE: "4,3,2/4,8,9,10/5/M"
 
-// TODO: add rule syntax checking (parse proper - numStates can only be one number)
-
 RulesetNew::RulesetNew(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule) {
     // Parse string
     this->neighborCountingRule = neighborCountingRule;
@@ -40,7 +38,6 @@ RulesetNew::RulesetNew(const std::string& rulesetParameterString, NeighborCounti
             currentValueString = "";
             currentCondition.push_back(pushedValue);
         }
-        // TODO: impl hyphen check and functionality
         // check if slash
         else if (character == '/')
         {

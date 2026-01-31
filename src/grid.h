@@ -6,8 +6,6 @@
 #include <stdexcept>
 #include <vector>
 
-// TODO: impl dynamic resizing
-
 class Grid
 {
     public:
