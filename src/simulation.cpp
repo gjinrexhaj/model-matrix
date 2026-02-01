@@ -138,7 +138,7 @@ void Simulation::UpdateSimulationState()
 
 
 
-    // anonymous func which takes a ranze of Z layers to compute
+    // anonymous func which takes a range of Z layers to compute
     auto processSlice = [&](unsigned int zStart, unsigned int zEnd)
     {
         // loop over slize of z layers assigned to current thread
