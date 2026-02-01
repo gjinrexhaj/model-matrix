@@ -134,10 +134,12 @@ class ModelMatrixApp final : public Application
         // Simulation settings state values
         int targetFpsValue = 60;
         int simulationSize = 70;
+        int advancementSpeed = 10;
 
         // Control panel state values
         Viewport viewportWindow;
         RenderTexture ViewTexture;
+        bool isAdvancing = false;
 
         // UI FUNCTIONS
         void DrawMenuBar()
@@ -171,17 +173,24 @@ class ModelMatrixApp final : public Application
             {
                 ImGui::Begin("Status", &showSimStatus);
                 ImGui::PushFont(consoleFont);
-                if (simulation->IsSimulationRunning())
+
+                if (isAdvancing)
                 {
-                    ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
-                } else
-                {
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE IDLE");
+                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE ADVANCING");
+                    ImGui::Text("FPS: %d / %d", GetFPS(), advancementSpeed);
+                } else {
+                    if (simulation->IsSimulationRunning())
+                    {
+                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
+                    } else
+                    {
+                        ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "ENGINE IDLE");
+                    }
+                    ImGui::Text("FPS: %d / %d", GetFPS(), targetFpsValue);
                 }
-                ImGui::Text("FPS: %d / %d", GetFPS(), targetFpsValue);
                 ImGui::Text("OpenGL %i", rlGetVersion());
                 ImGui::Text("Raylib %i.%i", RAYLIB_VERSION_MAJOR, RAYLIB_VERSION_MINOR);
-                ImGui::Text("Threads Running: %i", simulation->getNumThreads());
+                ImGui::Text("Threads: %i", simulation->getNumThreads());
                 ImGui::PopFont();
                 ImGui::End();
             }
@@ -350,7 +359,7 @@ class ModelMatrixApp final : public Application
                         viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button("Resize to fit"))
+                    if (ImGui::Button("Fit to window"))
                     {
                         resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
                         resolution[1] = viewportWindow.GetWindowSize().at(1);
@@ -383,7 +392,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 5: Simulation settings (speed, regression buffer, etc)
                 ImGui::Text("SIMULATION SETTINGS");
-                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
+                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("SimulationSettingsTable", 1, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -396,12 +405,23 @@ class ModelMatrixApp final : public Application
                     }
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
+                    ImGui::Text("Advancement speed (fps): ");
+                    ImGui::SameLine();
+                    if (ImGui::SliderInt("##advancementSlider", &advancementSpeed, 1, 120))
+                    {
+                        SetTargetFPS(targetFpsValue);
+                    }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
                     ImGui::Text("Grid Size: ");
                     ImGui::SameLine();
-                    if (ImGui::InputInt("##InputIntForSimSpan", &simulationSize, 5))
+                    ImGui::InputInt("##InputIntForSimSpan", &simulationSize, 5);
+                    ImGui::SameLine();
+                    if (ImGui::Button("Resize"))
                     {
                         simulation->ResizeSimulationSpan(simulationSize);
-                    };
+                    }
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
 
@@ -418,7 +438,7 @@ class ModelMatrixApp final : public Application
                 viewportWindow.Show();
             }
         }
-        void ProcessKeyboardInput() const
+        void ProcessKeyboardInput()
         {
             if (simulation->IsSimulationRunning())
             {
@@ -433,10 +453,18 @@ class ModelMatrixApp final : public Application
                     simulation->StartSimulation();
                 } else if (IsKeyDown(KEY_RIGHT))
                 {
+                    isAdvancing = true;
+                    SetTargetFPS(advancementSpeed);
                     simulation->StartSimulation();
                     simulation->UpdateSimulationState();
                     simulation->StopSimulation();
+
+                } else if (isAdvancing)
+                {
+                    SetTargetFPS(targetFpsValue);
+                    isAdvancing = false;
                 }
+
             }
             if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
             {
