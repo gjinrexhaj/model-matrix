@@ -26,11 +26,36 @@ class Grid
             data[getIndex(xIndex, yIndex, zIndex)] = state;
         }
 
-        void resize(const int x, const int y, const int z)
+        void resize(const int newW, const int newH, const int newD)
         {
-            data.resize(x * y * z);
-            width = x, height = y, depth = z;
+            // create new data buffer
+            std::vector<int> newData(newW * newH * newD);
+
+            const int cpyWidth = std::min(width,  newW);
+            const int cpyHeight = std::min(height, newH);
+            const int cpyDepth = std::min(depth,  newD);
+
+            // copy overlapping region
+            for (int z = 0; z < cpyDepth; ++z)
+            {
+                for (int y = 0; y < cpyHeight; ++y)
+                {
+                    for (int x = 0; x < cpyWidth; ++x)
+                    {
+                        int oldIndex = z * (width * height) + y * width + x;
+                        int newIndex = z * (newW * newH) + y * newW + x;
+                        newData[newIndex] = data[oldIndex];
+                    }
+                }
+            }
+
+            // apply resize buffer to new grid, change internal state accordingly
+            data = std::move(newData);
+            width  = newW;
+            height = newH;
+            depth  = newD;
         }
+
 
         std::vector<int> getDataVector()
         {
