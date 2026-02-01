@@ -179,6 +179,7 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("FPS: %d", GetFPS());
                 ImGui::Text("OpenGL %i", rlGetVersion());
                 ImGui::Text("Raylib %i.%i", RAYLIB_VERSION_MAJOR, RAYLIB_VERSION_MINOR);
+                ImGui::Text("Threads Running: %i", simulation->getNumThreads());
                 ImGui::PopFont();
                 ImGui::End();
             }

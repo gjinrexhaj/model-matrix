@@ -35,6 +35,7 @@ class Simulation
         bool IsSimulationRunning();
         void StartSimulation();
         void StopSimulation();
+        unsigned int getNumThreads();
         // Destructor
         ~Simulation();
 
@@ -46,4 +47,5 @@ class Simulation
         bool running = false;
         Grid activeGrid;
         Grid tempGrid;
+        unsigned int numThreads;
 };

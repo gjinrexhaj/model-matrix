@@ -133,8 +133,10 @@ void Simulation::UpdateSimulationState()
     int maxState = activeRuleset.numStates.at(0);
 
     // determing number of threads
-    unsigned int numThreads = std::thread::hardware_concurrency();
+    numThreads = std::thread::hardware_concurrency();
     if (numThreads == 0) numThreads = 4; // fallback
+
+
 
     // anonymous func which takes a ranze of Z layers to compute
     auto processSlice = [&](unsigned int zStart, unsigned int zEnd)
@@ -311,6 +313,11 @@ void Simulation::StartSimulation()
 void Simulation::StopSimulation()
 {
     running = false;
+}
+
+unsigned int Simulation::getNumThreads()
+{
+    return numThreads;
 }
 
 Simulation::~Simulation()
