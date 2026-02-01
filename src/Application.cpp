@@ -20,6 +20,7 @@
 
 // TODO: OPTIMIZE RENDERING
 // TODO: impl grid dynamic resizing
+// TODO: store and load imgui ini in app bundle
 
 class ModelMatrixApp final : public Application
 {
