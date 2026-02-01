@@ -90,16 +90,26 @@ inline int Simulation::CountLiveNeighbors(int x, int y, int z)
 
     for (int i = 0; i < 26; ++i)
     {
-        const int nx = x + deltas[i][0];
-        const int ny = y + deltas[i][1];
-        const int nz = z + deltas[i][2];
+        int nx = x + deltas[i][0];
+        int ny = y + deltas[i][1];
+        int nz = z + deltas[i][2];
 
-        // single compound bounds check
-        if ((unsigned)nx < (unsigned)w &&
-            (unsigned)ny < (unsigned)h &&
-            (unsigned)nz < (unsigned)d)
+        if (wrapGrid)  // wrap around edges
         {
+            // modulo-based wrapping
+            nx = (nx + w) % w;
+            ny = (ny + h) % h;
+            nz = (nz + d) % d;
             count += (activeGrid.read(nx, ny, nz) == maxState);
+        }
+        else  // hard boundaries
+        {
+            if ((unsigned)nx < (unsigned)w &&
+                (unsigned)ny < (unsigned)h &&
+                (unsigned)nz < (unsigned)d)
+            {
+                count += (activeGrid.read(nx, ny, nz) == maxState);
+            }
         }
     }
 
@@ -337,6 +347,11 @@ unsigned int Simulation::getNumThreads()
 void Simulation::toggleDrawWireframe()
 {
     drawWireframe = !drawWireframe;
+}
+
+void Simulation::toggleGridWrapping()
+{
+    wrapGrid = !wrapGrid;
 }
 
 Simulation::~Simulation()

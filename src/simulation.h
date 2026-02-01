@@ -37,6 +37,7 @@ class Simulation
         void StopSimulation();
         unsigned int getNumThreads();
         void toggleDrawWireframe();
+        void toggleGridWrapping();
         // Destructor
         ~Simulation();
 
@@ -50,4 +51,5 @@ class Simulation
         Grid tempGrid;
         unsigned int numThreads;
         bool drawWireframe = false;
+        bool wrapGrid = false;
 };

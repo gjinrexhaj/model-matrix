@@ -31,7 +31,7 @@ class ModelMatrixApp final : public Application
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
         //Simulation simulation {70, rulesetNew, activeColors};
-        Simulation* simulation = new Simulation(70, rulesetNew, activeColors);
+        Simulation* simulation = new Simulation(110, rulesetNew, activeColors);
 
         // Fonts
         ImFont* interFont;
@@ -134,8 +134,9 @@ class ModelMatrixApp final : public Application
         bool drawWireframe = false;
         // Simulation settings state values
         int targetFpsValue = 60;
-        int simulationSize = 70;
+        int simulationSize = 110;
         int advancementSpeed = 10;
+        bool toggleGridWrapping = false;
 
         // Control panel state values
         Viewport viewportWindow;
@@ -402,7 +403,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 5: Simulation settings (speed, regression buffer, etc)
                 ImGui::Text("SIMULATION SETTINGS");
-                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
+                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 110), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("SimulationSettingsTable", 1, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -432,6 +433,15 @@ class ModelMatrixApp final : public Application
                     {
                         simulation->ResizeSimulationSpan(simulationSize);
                     }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Grid wrapping: ");
+                    ImGui::SameLine();
+                    if (ImGui::Checkbox("##wraptoggle", &toggleGridWrapping))
+                    {
+                        simulation->toggleGridWrapping();
+                    }
+
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
 
