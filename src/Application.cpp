@@ -19,7 +19,6 @@
 
 
 // TODO: OPTIMIZE RENDERING
-// TODO: impl simulation speed slider on viewport control panel window
 // TODO: impl grid dynamic resizing
 
 class ModelMatrixApp final : public Application
