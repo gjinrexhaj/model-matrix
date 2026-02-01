@@ -99,7 +99,6 @@ class ModelMatrixApp final : public Application
             DrawAboutWindow();
             DrawControlPanelWindow();
             DrawViewportWindow();
-
         }
 
     // Every var in private represents state
@@ -138,11 +137,12 @@ class ModelMatrixApp final : public Application
         int simulationSize = 100;
         int advancementSpeed = 10;
         bool toggleGridWrapping = false;
-
         // Control panel state values
         Viewport viewportWindow;
         RenderTexture ViewTexture;
         bool isAdvancing = false;
+        // General flags
+        int windowInitState = 0;
 
         // UI FUNCTIONS
         void DrawMenuBar()
@@ -457,6 +457,18 @@ class ModelMatrixApp final : public Application
             if (showViewport)
             {
                 viewportWindow.Show();
+
+                if (windowInitState == 2)
+                {
+                    std::cout << "first frame! resizing viewport to fit." << std::endl;
+                    resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
+                    resolution[1] = viewportWindow.GetWindowSize().at(1);
+                    viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
+                    windowInitState = 3;
+                } else if (windowInitState < 2)
+                {
+                    windowInitState++;
+                }
             }
         }
         void ProcessKeyboardInput()
