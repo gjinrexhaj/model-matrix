@@ -16,7 +16,7 @@
 class Viewport
 {
     public:
-        int radius = 150;
+        int radius = 200;
         int cameraFov;
         float panSensitivity;
         int scrollSpeed;
@@ -35,7 +35,6 @@ class Viewport
             viewportSimulation = simulation;
             viewportColors = colors;
 
-            // Viewport + camera setup
             ViewTexture = LoadRenderTexture(viewportResolution.x, viewportResolution.y);
             camera.fovy = 45;
             camera.projection = CAMERA_PERSPECTIVE;
