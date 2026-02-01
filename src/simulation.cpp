@@ -244,12 +244,26 @@ void Simulation::DrawSimulationState()
                     // draw white cube if cell exceeds max state due to change
                     if (currentCellState > activeRuleset.numStates.at(0))
                     {
-                        DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                        if (drawWireframe)
+                        {
+                            DrawCubeWires(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
                             Color(255, 255, 255, 127));
+                        } else
+                        {
+                            DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                            Color(255, 255, 255, 127));
+                        }
                     } else
                     {
-                        DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                        if (drawWireframe)
+                        {
+                            DrawCubeWires(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
                             activeStateColors.at(currentCellState - 1));
+                        } else
+                        {
+                            DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
+                            activeStateColors.at(currentCellState - 1));
+                        }
                     }
                 }
             }
@@ -318,6 +332,11 @@ void Simulation::StopSimulation()
 unsigned int Simulation::getNumThreads()
 {
     return numThreads;
+}
+
+void Simulation::toggleDrawWireframe()
+{
+    drawWireframe = !drawWireframe;
 }
 
 Simulation::~Simulation()

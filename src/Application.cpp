@@ -131,6 +131,7 @@ class ModelMatrixApp final : public Application
         float backgroundColors[3] = {0,0,0};
         float boundboxColors[3] = {1,1,1};
         bool fitToWindow = false;
+        bool drawWireframe = false;
         // Simulation settings state values
         int targetFpsValue = 60;
         int simulationSize = 70;
@@ -347,7 +348,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
                 ImGui::Text("VIEWPORT SETTINGS");
-                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
+                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 110), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -383,6 +384,15 @@ class ModelMatrixApp final : public Application
                         Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
                         simulation->boundingBoxColor = newBoundboxColor;
                     }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Draw wireframe: ");
+                    ImGui::SameLine();
+                    if (ImGui::Checkbox("##wireframecheckbox", &drawWireframe))
+                    {
+                        simulation->toggleDrawWireframe();
+                    }
+
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
 
