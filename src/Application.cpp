@@ -128,12 +128,13 @@ class ModelMatrixApp final : public Application
         bool additiveFill = false;
         // Viewport settings state value
         int resolution[2] = {1000,1000};
-        int simulationSize = 70;
         float backgroundColors[3] = {0,0,0};
         float boundboxColors[3] = {1,1,1};
         bool fitToWindow = false;
+        // Simulation settings state values
         int targetFpsValue = 60;
-        bool autosizeEnabled = false;
+        int simulationSize = 70;
+
         // Control panel state values
         Viewport viewportWindow;
         RenderTexture ViewTexture;
