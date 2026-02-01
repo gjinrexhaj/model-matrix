@@ -53,6 +53,8 @@ class Viewport
         {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
+            ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
+
             if (ImGui::Begin("3D Viewport", &open, ImGuiWindowFlags_NoScrollbar))
             {
                 // Update window data

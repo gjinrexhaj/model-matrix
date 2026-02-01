@@ -49,6 +49,10 @@ class ModelMatrixApp final : public Application
             ViewTexture = LoadRenderTexture(windowWidth, windowHeight);
             io.ConfigWindowsMoveFromTitleBarOnly = true;
 
+            // Set INI path
+#if defined(__APPLE__)
+            io.IniFilename = "/Users/Shared/model-matrix.ini";
+#endif
             // Start up viewport and simulation
             viewportWindow.Setup(*simulation, rulesetNew, activeColors);
             newColors.reserve(simulation->GetStateColors().size());
