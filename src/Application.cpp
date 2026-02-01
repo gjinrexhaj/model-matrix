@@ -31,7 +31,7 @@ class ModelMatrixApp final : public Application
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
         //Simulation simulation {70, rulesetNew, activeColors};
-        Simulation* simulation = new Simulation(110, rulesetNew, activeColors);
+        Simulation* simulation = new Simulation(100, rulesetNew, activeColors);
 
         // Fonts
         ImFont* interFont;
@@ -134,7 +134,7 @@ class ModelMatrixApp final : public Application
         bool drawWireframe = false;
         // Simulation settings state values
         int targetFpsValue = 60;
-        int simulationSize = 110;
+        int simulationSize = 100;
         int advancementSpeed = 10;
         bool toggleGridWrapping = false;
 
