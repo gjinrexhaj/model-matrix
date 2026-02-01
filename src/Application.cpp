@@ -42,7 +42,7 @@ class ModelMatrixApp final : public Application
         void startUp() override
         {
             // Apply theming, fonts, config flags, and update state
-            SetTargetFPS(60);
+            SetTargetFPS(targetFpsValue);
             rlImGuiSetup(true);
 
             ImGuiIO& io = ImGui::GetIO();
@@ -133,6 +133,8 @@ class ModelMatrixApp final : public Application
         float backgroundColors[3] = {0,0,0};
         float boundboxColors[3] = {1,1,1};
         bool fitToWindow = false;
+        int targetFpsValue = 60;
+        bool autosizeEnabled = false;
         // Control panel state values
         Viewport viewportWindow;
         RenderTexture ViewTexture;
@@ -176,7 +178,7 @@ class ModelMatrixApp final : public Application
                 {
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE IDLE");
                 }
-                ImGui::Text("FPS: %d", GetFPS());
+                ImGui::Text("FPS: %d / %d", GetFPS(), targetFpsValue);
                 ImGui::Text("OpenGL %i", rlGetVersion());
                 ImGui::Text("Raylib %i.%i", RAYLIB_VERSION_MAJOR, RAYLIB_VERSION_MINOR);
                 ImGui::Text("Threads Running: %i", simulation->getNumThreads());
@@ -336,53 +338,73 @@ class ModelMatrixApp final : public Application
 
                 // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
                 ImGui::Text("VIEWPORT SETTINGS");
-                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 140), ImGuiChildFlags_Border);
+                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     ImGui::Text("Res: ");
                     ImGui::SameLine();
-                    if (!fitToWindow)
+
+                    if (ImGui::InputInt2("##resolutionInputInt2", resolution))
                     {
-                        ImGui::InputInt2("##resolutionInputInt2", resolution);
-                    } else
-                    {
-                        ImGui::BeginDisabled();
-                        resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
-                        resolution[1] = viewportWindow.GetWindowSize().at(1);
-                        ImGui::InputInt2("##resolutionInputInt2disabled", resolution);
-                        ImGui::EndDisabled();
+                        viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
                     }
                     ImGui::SameLine();
-                    ImGui::Text("Auto: ");
-                    ImGui::SameLine();
-                    ImGui::Checkbox("##autofitViewportToWindow", &fitToWindow);
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    ImGui::Text("Grid Size: ");
-                    ImGui::SameLine();
-                    ImGui::InputInt("##InputIntForSimSpan", &simulationSize);
+                    if (ImGui::Button("Resize to fit"))
+                    {
+                        resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
+                        resolution[1] = viewportWindow.GetWindowSize().at(1);
+                        viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
+                    };
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     ImGui::Text("Background Color: ");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3("##ColorPickerLabelForVPBackground", backgroundColors);
+                    if (ImGui::ColorEdit3("##ColorPickerLabelForVPBackground", backgroundColors))
+                    {
+                        Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
+                        viewportWindow.backgroundColor = newBackgroundColor;
+                    }
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
                     ImGui::Text("BoundBox Color: ");
                     ImGui::SameLine();
-                    ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors);
-                    ImGui::TableNextRow();
-                    ImGui::TableNextColumn();
-                    if (ImGui::Button("Apply Viewport Changes"))
+                    if (ImGui::ColorEdit3("##ColorPickerLabelForVPBoundBox", boundboxColors))
                     {
-                        viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
-                        simulation->ResizeSimulationSpan(simulationSize);
-                        Color newBackgroundColor = Color(backgroundColors[0]*255.0f, backgroundColors[1]*255.0f, backgroundColors[2]*255.0f, 255.0f);
                         Color newBoundboxColor = Color(boundboxColors[0]*255.0f, boundboxColors[1]*255.0f, boundboxColors[2]*255.0f, 255.0f);
-                        viewportWindow.backgroundColor = newBackgroundColor;
                         simulation->boundingBoxColor = newBoundboxColor;
                     }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
+                    ImGui::EndTable();
+                }
+                ImGui::EndChild();
+
+                // Row 5: Simulation settings (speed, regression buffer, etc)
+                ImGui::Text("SIMULATION SETTINGS");
+                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
+                if (ImGui::BeginTable("SimulationSettingsTable", 1, ImGuiTableFlags_NoSavedSettings))
+                {
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Simulation speed (fps): ");
+                    ImGui::SameLine();
+                    if (ImGui::SliderInt("##fpsSlider", &targetFpsValue, 30, 120))
+                    {
+                        SetTargetFPS(targetFpsValue);
+                    }
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Grid Size: ");
+                    ImGui::SameLine();
+                    if (ImGui::InputInt("##InputIntForSimSpan", &simulationSize, 5))
+                    {
+                        simulation->ResizeSimulationSpan(simulationSize);
+                    };
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
                     ImGui::EndTable();
                 }
                 ImGui::EndChild();
