@@ -352,7 +352,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
                 ImGui::Text("VIEWPORT SETTINGS");
-                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 110), ImGuiChildFlags_Border);
+                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -406,7 +406,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 5: Simulation settings (speed, regression buffer, etc)
                 ImGui::Text("SIMULATION SETTINGS");
-                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 110), ImGuiChildFlags_Border);
+                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("SimulationSettingsTable", 1, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
