@@ -62,6 +62,7 @@ class ModelMatrixApp final : public Application
 
             themes::load_ue();
 
+            // If MacOS, use bundled fonts, otherwise use header fonts
 #if  defined(__APPLE__) && !defined(__EMSCRIPTEN__)
             std::string interPath = getResourcePath("Inter-Regular", "ttf");
             std::string jbrPath = getResourcePath("JetBrainsMono-Regular", "ttf");
