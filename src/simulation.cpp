@@ -309,7 +309,7 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
                         activeGrid.write(x+origin[0],y+origin[1],z+origin[2],maxState);
                     } catch (std::exception& e)
                     {
-
+                        std::cerr<<e.what()<<std::endl;
                     }
                 } else if (!additive)
                 {
@@ -318,7 +318,7 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
                         activeGrid.write(x+origin[0],y+origin[1],z+origin[2],0);
                     } catch (std::exception& e)
                     {
-
+                        std::cerr<<e.what()<<std::endl;
                     }
                 }
             }
