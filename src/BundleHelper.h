@@ -3,7 +3,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <string>
-#include <imgui.h>
 
 // Function to find a resource path within the app bundle
 inline std::string getResourcePath(const std::string& fileName, const std::string& fileType) {
