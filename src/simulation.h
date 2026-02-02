@@ -30,7 +30,7 @@ class Simulation
         void ClearGrid();
         void UpdateSimulationState();
         void DrawSimulationState();
-        void RandomizeSimulationState(float sparsity, int cubeRadius, bool additive);
+        void RandomizeSimulationState(float sparsity, int cubeRadius, bool additive, int origin[3]);
         void ResizeSimulationSpan(int newSize);
         bool IsSimulationRunning();
         void StartSimulation();

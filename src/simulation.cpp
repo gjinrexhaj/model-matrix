@@ -281,7 +281,7 @@ void Simulation::DrawSimulationState()
     }
 }
 
-void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool additive)
+void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool additive, int origin[3])
 {
     std::cout<<"--- Randomizing simulation state ---"<<std::endl;
     std::cout<<"sparsity: "<<sparsity<<"/10.0"<<std::endl;
@@ -304,10 +304,22 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
                 double determine = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
                 if (determine > sparsity)
                 {
-                    activeGrid.write(x,y,z,maxState);
+                    try
+                    {
+                        activeGrid.write(x+origin[0],y+origin[1],z+origin[2],maxState);
+                    } catch (std::exception& e)
+                    {
+
+                    }
                 } else if (!additive)
                 {
-                    activeGrid.write(x,y,z,0);
+                    try
+                    {
+                        activeGrid.write(x+origin[0],y+origin[1],z+origin[2],0);
+                    } catch (std::exception& e)
+                    {
+
+                    }
                 }
             }
         }
