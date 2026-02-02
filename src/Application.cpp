@@ -68,9 +68,6 @@ class ModelMatrixApp final : public Application
             consoleFont = io.Fonts->AddFontFromFileTTF(jbrPath.c_str(), 15);;
             interFont = io.Fonts->AddFontFromFileTTF(interPath.c_str(), 14);
 #else
-            //consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
-            //interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
-
             interFont = io.Fonts->AddFontFromMemoryCompressedTTF(
                 InterRegular_compressed_data,
                 InterRegular_compressed_size,
