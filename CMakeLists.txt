@@ -77,11 +77,6 @@ if (APPLE)
             MACOSX_PACKAGE_LOCATION "Resources"
     )
 
-    message("Adding fonts to bundle resource")
-    set_source_files_properties(${APP_FONTS} PROPERTIES
-            MACOSX_PACKAGE_LOCATION "Resources"
-    )
-
     # Patch the dylibs into the bundle
     set_target_properties(${PROJECT_NAME} PROPERTIES
             BUILD_RPATH "@executable_path/../Frameworks"
