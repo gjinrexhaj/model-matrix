@@ -49,9 +49,10 @@ set(APP_FONTS
         "./res/fonts/Inter-Regular.ttf"
         "./res/fonts/JetBrainsMono-Regular.ttf"
 )
+set(WIN_ICON_RS_FILE res/resources.rc)
 
 # Create executable with all sources and headers
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${ICON_PATH} ${APP_FONTS})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${ICON_PATH} ${APP_FONTS} ${WIN_ICON_RS_FILE})
 
 # build imgui library
 add_library(ImGui STATIC
