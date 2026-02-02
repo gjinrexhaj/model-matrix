@@ -68,7 +68,6 @@ class ModelMatrixApp final : public Application
                 JetBrainsMono_compressed_size,
                 15.0f
             );
-//#endif
 
             io.FontDefault = interFont;
         }
