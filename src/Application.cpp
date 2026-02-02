@@ -12,6 +12,9 @@
 
 #if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
     #include "BundleHelper.h"
+#else
+    #include "InterRegular.h"
+    #include "JetBrainsMono.h"
 #endif
 
 #define CHAR_BUFFER_SIZE 256
@@ -65,8 +68,20 @@ class ModelMatrixApp final : public Application
             consoleFont = io.Fonts->AddFontFromFileTTF(jbrPath.c_str(), 15);;
             interFont = io.Fonts->AddFontFromFileTTF(interPath.c_str(), 14);
 #else
-            consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
-            interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
+            //consoleFont = io.Fonts->AddFontFromFileTTF("../res/fonts/JetBrainsMono-Regular.ttf", 15);;
+            //interFont = io.Fonts->AddFontFromFileTTF("../res/fonts/Inter-Regular.ttf", 14);
+
+            interFont = io.Fonts->AddFontFromMemoryCompressedTTF(
+                InterRegular_compressed_data,
+                InterRegular_compressed_size,
+                14.0f
+            );
+
+            consoleFont = io.Fonts->AddFontFromMemoryCompressedTTF(
+                JetBrainsMono_compressed_data,
+                JetBrainsMono_compressed_size,
+                15.0f
+            );
 #endif
 
             io.FontDefault = interFont;
