@@ -4,18 +4,13 @@
 
 #include "Application.h"
 
+#include "InterRegular.h"
+#include "JetBrainsMono.h"
 #include "ruleset.h"
 #include "Viewport.h"
 #include "simulation.h"
 #include "themes.h"
 #include "rlgl.h"
-
-#if defined(__APPLE__) && !defined(__EMSCRIPTEN__)
-    #include "BundleHelper.h"
-#else
-    #include "InterRegular.h"
-    #include "JetBrainsMono.h"
-#endif
 
 #define CHAR_BUFFER_SIZE 256
 
@@ -32,7 +27,6 @@ class ModelMatrixApp final : public Application
         // Create simulation members, initialize with default values
         RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
-        //Simulation simulation {70, rulesetNew, activeColors};
         Simulation* simulation = new Simulation(100, rulesetNew, activeColors);
 
         // Fonts
@@ -62,13 +56,7 @@ class ModelMatrixApp final : public Application
 
             themes::load_ue();
 
-            // If MacOS, use bundled fonts, otherwise use header fonts
-#if  defined(__APPLE__) && !defined(__EMSCRIPTEN__)
-            std::string interPath = getResourcePath("Inter-Regular", "ttf");
-            std::string jbrPath = getResourcePath("JetBrainsMono-Regular", "ttf");
-            consoleFont = io.Fonts->AddFontFromFileTTF(jbrPath.c_str(), 15);;
-            interFont = io.Fonts->AddFontFromFileTTF(interPath.c_str(), 14);
-#else
+            // load fonts from font headers
             interFont = io.Fonts->AddFontFromMemoryCompressedTTF(
                 InterRegular_compressed_data,
                 InterRegular_compressed_size,
@@ -80,7 +68,7 @@ class ModelMatrixApp final : public Application
                 JetBrainsMono_compressed_size,
                 15.0f
             );
-#endif
+//#endif
 
             io.FontDefault = interFont;
         }
