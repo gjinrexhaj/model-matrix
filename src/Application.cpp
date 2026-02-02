@@ -52,7 +52,7 @@ class ModelMatrixApp final : public Application
             // Start up viewport and simulation
             viewportWindow.Setup(*simulation, rulesetNew, activeColors);
             newColors.reserve(simulation->GetStateColors().size());
-            simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+            simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill, originPoint);
 
             themes::load_ue();
 
@@ -128,6 +128,7 @@ class ModelMatrixApp final : public Application
         float rngSparsity = 8.9;
         int cubeRadius = 30;
         bool additiveFill = false;
+        int originPoint[3] = {0,0,0};
         // Viewport settings state value
         int resolution[2] = {1000,1000};
         float backgroundColors[3] = {0,0,0};
@@ -327,7 +328,7 @@ class ModelMatrixApp final : public Application
 
                 // Row 3: Grid drawing
                 ImGui::Text("DRAW CELLS");
-                ImGui::BeginChild("drawellsContainer", ImVec2(0, 90), ImGuiChildFlags_Border);
+                ImGui::BeginChild("drawellsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("Drawcellstable", 2, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -345,7 +346,13 @@ class ModelMatrixApp final : public Application
                     ImGui::Text("PRESS 'R' FOR ONCE");
                     ImGui::Text( "HOLD 'T' FOR MULTIPLE");
                     ImGui::Text("PRESS 'C' TO CLEAR ALL");
+
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
                     ImGui::EndTable();
+                    ImGui::Text("Origin [x,y,z]: ");
+                    ImGui::SameLine();
+                    ImGui::DragInt3("##originDragger", originPoint);
                 }
                 ImGui::EndChild();
 
@@ -503,7 +510,7 @@ class ModelMatrixApp final : public Application
             }
             if (IsKeyPressed(KEY_R) || IsKeyDown(KEY_T))
             {
-                simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill);
+                simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill, originPoint);
             } else if (IsKeyPressed(KEY_C))
             {
                 simulation->ClearGrid();
