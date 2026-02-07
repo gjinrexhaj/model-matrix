@@ -25,9 +25,9 @@ class ModelMatrixApp final : public Application
         ~ModelMatrixApp() override = default;
 
         // Create simulation members, initialize with default values
-        RulesetNew rulesetNew{"4/4,6/7", NeighborCountingRule::MOORE};
+        Ruleset rs{"4/4,6/7", NeighborCountingRule::MOORE};
         std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
-        Simulation* simulation = new Simulation(100, rulesetNew, activeColors);
+        Simulation* simulation = new Simulation(100, rs, activeColors);
 
         // Fonts
         ImFont* interFont;
@@ -50,7 +50,7 @@ class ModelMatrixApp final : public Application
             io.IniFilename = "/Users/Shared/model-matrix.ini";
 #endif
             // Start up viewport and simulation
-            viewportWindow.Setup(*simulation, rulesetNew, activeColors);
+            viewportWindow.Setup(*simulation, rs, activeColors);
             newColors.reserve(simulation->GetStateColors().size());
             simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill, originPoint);
 
@@ -86,13 +86,13 @@ class ModelMatrixApp final : public Application
             });
 
             // update the viewport window
-            viewportWindow.Update(*simulation, rulesetNew, activeColors);
-
-            // Handle keybinds
-            ProcessKeyboardInput();
+            viewportWindow.Update(*simulation, rs, activeColors);
 
             // join the simulation thread
             simulateThread.join();
+
+            // Handle keybinds
+            ProcessKeyboardInput();
 
             // draw the UI
             DrawMenuBar();
@@ -265,7 +265,7 @@ class ModelMatrixApp final : public Application
                     {
                         try
                         {
-                            rulesetNew = RulesetNew(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
+                            rs = Ruleset(std::string(rulesetField), neighborCountingRules.at(selectedCountingRule));
                         } catch (std::exception &e)
                         {
                             currentRulsetIsInvalid = true;
@@ -276,7 +276,7 @@ class ModelMatrixApp final : public Application
                         std::cout << "ruleset applied successfully!" << std::endl;
                     }
                     ImGui::TableNextColumn();
-                    rsString = rulesetNew.GetRulesetAsString();
+                    rsString = rs.GetRulesetAsString();
                     ImGui::Text("Active: ");
                     ImGui::SameLine();
                     if (currentRulsetIsInvalid)

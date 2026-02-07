@@ -24,11 +24,11 @@ class Viewport
         Color backgroundColor = BLACK;
 
         // temp values for initialization
-        RulesetNew viewportRuleset = RulesetNew("1/1/1",NeighborCountingRule::MOORE);
+        Ruleset viewportRuleset = Ruleset("1/1/1",NeighborCountingRule::MOORE);
         std::pmr::vector<Color> viewportColors;
         Simulation viewportSimulation = Simulation(1, viewportRuleset, viewportColors);
 
-        void Setup(Simulation& simulation, RulesetNew& ruleset, std::pmr::vector<Color>& colors)
+        void Setup(Simulation& simulation, Ruleset& ruleset, std::pmr::vector<Color>& colors)
         {
             // Load ruleset, colors, and sim from app
             viewportRuleset = ruleset;
@@ -79,7 +79,7 @@ class Viewport
             ImGui::End();
         }
 
-        void Update(Simulation& simulation, RulesetNew& ruleset, std::pmr::vector<Color>& colors)
+        void Update(Simulation& simulation, Ruleset& ruleset, std::pmr::vector<Color>& colors)
         {
             viewportSimulation = simulation;
             viewportRuleset = ruleset;

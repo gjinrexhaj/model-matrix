@@ -13,7 +13,7 @@ enum class NeighborCountingRule: int
     VON_NEUMANN = 1,
 };
 
-class RulesetNew
+class Ruleset
 {
 public:
     std::vector<int> survivalConditions;
@@ -21,7 +21,7 @@ public:
     std::vector<int> numStates;
     NeighborCountingRule neighborCountingRule;
 
-    RulesetNew(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule);
+    Ruleset(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule);
 
     std::string GetRulesetAsString() const;
 };

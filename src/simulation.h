@@ -18,7 +18,7 @@ class Simulation
         Color boundingBoxColor = WHITE;
 
         // Constructor
-        Simulation(int simulationSpan, RulesetNew ruleset, std::pmr::vector<Color> stateColors) :
+        Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors) :
             activeSimulationSpan(simulationSpan), activeRuleset(std::move(ruleset)),
             activeStateColors(std::move(stateColors)), activeGrid(simulationSpan, simulationSpan, simulationSpan),
             tempGrid(activeGrid) {}
@@ -45,7 +45,7 @@ class Simulation
         // private variables - initialized by constructor
         int activeSimulationSpan; // How many cells the simulation space can fit vertically and horizontally
         std::pmr::vector<Color> activeStateColors;
-        RulesetNew activeRuleset;
+        Ruleset activeRuleset;
         bool running = false;
         Grid activeGrid;
         Grid tempGrid;

@@ -14,7 +14,7 @@
 // EXAMPLE RULE: "4,3,2/4,8,9/5/VN"
 // EXAMPLE RULE: "4,3,2/4,8,9,10/5/M"
 
-RulesetNew::RulesetNew(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule) {
+Ruleset::Ruleset(const std::string& rulesetParameterString, NeighborCountingRule neighborCountingRule) {
     // Parse string
     this->neighborCountingRule = neighborCountingRule;
 
@@ -76,7 +76,7 @@ RulesetNew::RulesetNew(const std::string& rulesetParameterString, NeighborCounti
     }
 }
 
-std::string RulesetNew::GetRulesetAsString() const
+std::string Ruleset::GetRulesetAsString() const
 {
 
 
