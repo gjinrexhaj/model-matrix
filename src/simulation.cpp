@@ -304,22 +304,10 @@ void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool a
                 double determine = static_cast<double>(std::rand()) / (RAND_MAX + 1.0) * 10;
                 if (determine > sparsity)
                 {
-                    try
-                    {
-                        activeGrid.write(x+origin[0],y+origin[1],z+origin[2],maxState);
-                    } catch (std::exception& e)
-                    {
-                        std::cerr<<e.what()<<std::endl;
-                    }
+                    activeGrid.write(x+origin[0],y+origin[1],z+origin[2],maxState);
                 } else if (!additive)
                 {
-                    try
-                    {
-                        activeGrid.write(x+origin[0],y+origin[1],z+origin[2],0);
-                    } catch (std::exception& e)
-                    {
-                        std::cerr<<e.what()<<std::endl;
-                    }
+                    activeGrid.write(x+origin[0],y+origin[1],z+origin[2],0);
                 }
             }
         }

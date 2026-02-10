@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <iostream>
 #include <stdexcept>
 #include <vector>
 
@@ -74,8 +75,10 @@ class Grid
         // Retrieve data of index
         int getIndex(const int x, const int y, const int z) const
         {
+
+            // bounds check
             if ((x >= width || y >= height || z >= depth) || (x < 0 || y < 0 || z < 0)) {
-                throw std::out_of_range("Grid3D: Index out of bounds");
+                return -1;
             }
             return z * (width * height) + y * width + x;
         }
