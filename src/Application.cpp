@@ -17,6 +17,7 @@
 
 
 // TODO: OPTIMIZE RENDERING
+// TODO: ADD MORE CAMERA CONTROLS (WASD QE MOVEMENT, + RESET BUTTON)
 
 class ModelMatrixApp final : public Application
 {
@@ -78,7 +79,6 @@ class ModelMatrixApp final : public Application
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
-            // TODO: figure out if we should run simulation or rendering on seperate thread
             // start update simulation thread
             std::thread simulateThread([this]()
             {
@@ -210,7 +210,6 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("--- CONTROLS --- ");
                 ImGui::Text("ENTER: toggle engine");
                 ImGui::Text(" RIGHT: advance");
-                ImGui::Text(" LEFT: regress");
                 ImGui::Text(" C: clear grid");
                 ImGui::Text(" R/T: randomize grid");
                 ImGui::Text("\n");
