@@ -3,10 +3,7 @@
 //
 
 #pragma once
-#include <iostream>
-#include <stdexcept>
 #include <vector>
-#include <expected>
 
 class Grid
 {
@@ -25,13 +22,7 @@ class Grid
 
         void write(const int xIndex, const int yIndex, const int zIndex, const int state)
         {
-            try
-            {
-                data[getIndex(xIndex, yIndex, zIndex)] = state;
-            } catch (std::exception& e)
-            {
-                std::cerr << e.what() << std::endl;
-            }
+            data[getIndex(xIndex, yIndex, zIndex)] = state;
         }
 
         void resize(const int newW, const int newH, const int newD)
