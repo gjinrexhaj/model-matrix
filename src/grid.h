@@ -85,7 +85,7 @@ class Grid
 
             // bounds check
             if ((x >= width || y >= height || z >= depth) || (x < 0 || y < 0 || z < 0)) {
-                return -1;
+                return 0;
             }
             return z * (width * height) + y * width + x;
         }
