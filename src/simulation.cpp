@@ -116,8 +116,6 @@ inline int Simulation::CountLiveNeighbors(int x, int y, int z)
     return count;
 }
 
-
-
 void Simulation::ClearGrid()
 {
     for (unsigned int z = 0; z < activeGrid.getDepth(); ++z) {
@@ -133,14 +131,15 @@ void Simulation::ClearGrid()
 void Simulation::UpdateSimulationState()
 {
     if (!running)
-        return; // early ret if not running
+    {
+        return;
+    }
 
-    // cache grid sizes
+    // cache important vars
     unsigned int depth = activeGrid.getDepth();
     unsigned int height = activeGrid.getHeight();
     unsigned int width = activeGrid.getWidth();
-
-    int maxState = activeRuleset.numStates.at(0);
+    int maxState = activeRuleset.numStates[0];
 
     // determing number of threads
     numThreads = std::thread::hardware_concurrency();
@@ -218,67 +217,73 @@ void Simulation::UpdateSimulationState()
     activeGrid = tempGrid;
 }
 
-
 void Simulation::DrawSimulationState()
 {
+    // cache vars and prepare state buffer
     const int depth = activeGrid.getDepth();
     const int height = activeGrid.getHeight();
     const int width = activeGrid.getWidth();
+    const size_t numStates = activeStateColors.size();
+    stateBuffers.assign(numStates, {});
+
+    // calculate offset
+    float rc = activeSimulationSpan / 2.0f;
+    Vector3 offset = (activeSimulationSpan % 2) ?
+                      Vector3{-rc, -rc, -rc} :
+                      Vector3{-rc + 0.5f, -rc + 0.5f, -rc + 0.5f};
 
 
-    // Center middle-most cube
-    int rc = activeSimulationSpan/2;
-    Vector3 translation3DOffset;
-    if (activeSimulationSpan % 2)
-    {
-        translation3DOffset = Vector3(-rc, -rc, -rc);
-    } else
-    {
-        translation3DOffset = Vector3(-rc + 0.5, -rc + 0.5, -rc + 0.5);
-    }
+    // handle culling and sorting
+    for (int z = 0; z < depth; ++z) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                int state = activeGrid.read(x, y, z);
 
-    // Draw bounding-box
-    DrawCubeWiresV(Vector3(0,0,0), Vector3(activeSimulationSpan, activeSimulationSpan, activeSimulationSpan),boundingBoxColor);
-
-    // Iterate through grid DS and draw the state
-    for (unsigned int z = 0; z < depth; ++z) {
-        for (unsigned int y = 0; y < height; ++y) {
-            for (unsigned int x = 0; x < width; ++x)
-            {
-                // Get cell in question
-                int currentCellState = activeGrid.read(x,y,z);
-
-                // Access using coordinates, draw if state > 0 (0 is death, no state)
-                if (currentCellState > 0)
-                {
-                    // draw white cube if cell exceeds max state due to change
-                    if (currentCellState > activeRuleset.numStates.at(0))
-                    {
-                        if (drawWireframe)
+                if (state > 0) {
+                    // occlusion culling
+                    if (x > 0 && x < width - 1 && y > 0 && y < height - 1 && z > 0 && z < depth - 1) {
+                        if (activeGrid.read(x+1,y,z) != 0 && activeGrid.read(x-1,y,z) != 0 &&
+                            activeGrid.read(x,y+1,z) != 0 && activeGrid.read(x,y-1,z) != 0 &&
+                            activeGrid.read(x,y,z+1) != 0 && activeGrid.read(x,y,z-1) != 0)
                         {
-                            DrawCubeWires(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                            Color(255, 255, 255, 127));
-                        } else
-                        {
-                            DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                            Color(255, 255, 255, 127));
+                            continue;
                         }
-                    } else
-                    {
-                        if (drawWireframe)
-                        {
-                            DrawCubeWires(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                            activeStateColors.at(currentCellState - 1));
-                        } else
-                        {
-                            DrawCube(Vector3Add(translation3DOffset, Vector3(x, y, z)), 1, 1, 1,
-                            activeStateColors.at(currentCellState - 1));
-                        }
+                    }
+
+                    // convert state number to buffer index
+                    size_t colorIdx = static_cast<size_t>(state - 1);
+
+                    // Safety check for dynamic rulesets
+                    if (colorIdx < numStates) {
+                        Matrix mat = MatrixTranslate(offset.x + x, offset.y + y, offset.z + z);
+                        stateBuffers[colorIdx].push_back(mat);
                     }
                 }
             }
         }
     }
+
+    // begin batch rendering
+    if (drawWireframe) {
+        rlEnableWireMode();
+    }
+
+    for (size_t i = 0; i < numStates; ++i) {
+        if (!stateBuffers[i].empty()) {
+            // update mat color for given batch
+            instanceMaterial.maps[MATERIAL_MAP_DIFFUSE].color = activeStateColors[i];
+
+            DrawMeshInstanced(cubeMesh, instanceMaterial, stateBuffers[i].data(), (int)stateBuffers[i].size());
+        }
+    }
+
+    if (drawWireframe)
+    {
+        rlDisableWireMode();
+    }
+
+    // draw bounding box
+    DrawCubeWiresV(Vector3Zero(), {(float)activeSimulationSpan, (float)activeSimulationSpan, (float)activeSimulationSpan}, boundingBoxColor);
 }
 
 void Simulation::RandomizeSimulationState(float sparsity, int cubeRadius, bool additive, int origin[3])
@@ -323,7 +328,6 @@ void Simulation::ResizeSimulationSpan(int newSize)
     tempGrid.resize(newSize, newSize, newSize);
 }
 
-
 bool Simulation::IsSimulationRunning()
 {
     return running;
@@ -356,5 +360,6 @@ void Simulation::toggleGridWrapping()
 
 Simulation::~Simulation()
 {
+    UnloadMesh(cubeMesh);
     std::cout<<"--- Simulation state destructor ---"<<std::endl;
 }
