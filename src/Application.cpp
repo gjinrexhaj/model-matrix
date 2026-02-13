@@ -100,7 +100,13 @@ class ModelMatrixApp final : public Application
             DrawStatusWindow();
             DrawUsageGuideWindow();
             DrawAboutWindow();
-            DrawControlPanelWindow();
+            DrawRulesetSettingsWindow();
+            DrawStateSettingsWindow();
+            DrawDrawSettingsWindow();
+            DrawViewportSettingsWindow();
+            DrawSimulationSettingsWindow();
+
+
             DrawViewportWindow();
         }
 
@@ -109,9 +115,16 @@ class ModelMatrixApp final : public Application
         // Window show flags
         bool showViewport = true;
         bool showSimStatus = true;
-        bool showControlPanel = true;
         bool showUsageGuide = false;
         bool showAbout = false;
+
+        // Settings window showflags
+        bool showRulesetSettings = true;
+        bool showStateSettings = true;
+        bool showDrawSettings = true;
+        bool showViewportSettings = true;
+        bool showSimulationSettings = true;
+
         // Ruleset editor fields
         char rulesetField[CHAR_BUFFER_SIZE] = {"4/4,6/7"};
         int selectedCountingRule = 0;
@@ -156,9 +169,30 @@ class ModelMatrixApp final : public Application
             {
                 showViewport = !showViewport;
             }
-            if (ImGui::MenuItem("Control Panel"))
+            if (ImGui::BeginMenu("Window"))
             {
-                showControlPanel = !showControlPanel;
+                if (ImGui::MenuItem("Ruleset Control"))
+                {
+                    showRulesetSettings = !showRulesetSettings;
+                }
+                if (ImGui::MenuItem("State Color Picker"))
+                {
+                    showStateSettings = !showStateSettings;
+                }
+                if (ImGui::MenuItem("Draw Cells"))
+                {
+                    showDrawSettings = !showDrawSettings;
+                }
+                if (ImGui::MenuItem("Viewport Settings"))
+                {
+                    showViewportSettings = !showViewportSettings;
+                }
+                if (ImGui::MenuItem("Simulation Settings"))
+                {
+                    showSimulationSettings = !showSimulationSettings;
+                }
+
+                ImGui::EndMenu();
             }
             if (ImGui::MenuItem("Status"))
             {
@@ -237,15 +271,34 @@ class ModelMatrixApp final : public Application
                 ImGui::End();
             }
         }
-        void DrawControlPanelWindow()
-        {
-            if (showControlPanel)
-            {
-                ImGui::Begin("Control Panel", &showControlPanel);
 
+        void DrawViewportWindow()
+        {
+            if (showViewport)
+            {
+                viewportWindow.Show();
+
+                if (windowInitState == 2)
+                {
+                    std::cout << "first frame! resizing viewport to fit." << std::endl;
+                    resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
+                    resolution[1] = viewportWindow.GetWindowSize().at(1);
+                    viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
+                    windowInitState = 3;
+                } else if (windowInitState < 2)
+                {
+                    windowInitState++;
+                }
+            }
+        }
+
+        void DrawRulesetSettingsWindow()
+        {
+            if (showRulesetSettings)
+            {
+                ImGui::Begin("RULESET", &showRulesetSettings);
                 // Row 1: Ruleset field
-                ImGui::Text("RULESET");
-                ImGui::BeginChild("rulesetContainer", ImVec2(0, 70), ImGuiChildFlags_Border);
+                // ImGui::BeginChild("rulesetContainer", ImVec2(0, 0), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("Controls", 2, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -288,12 +341,18 @@ class ModelMatrixApp final : public Application
                     }
                     ImGui::EndTable();
                 }
-                ImGui::EndChild();
+                // ImGui::EndChild();
+                ImGui::End();
+            }
+        }
 
-                // Row 2: State color picker
+        void DrawStateSettingsWindow()
+        {
+            if (showStateSettings)
+            {
+                ImGui::Begin("STATE COLORS", &showStateSettings);
                 currentActiveColors = simulation->GetStateColors();
-                ImGui::Text("STATE COLORS");
-                ImGui::BeginChild("colorContainer", ImVec2(0, 180), ImGuiChildFlags_Border);
+                // ImGui::BeginChild("colorContainer", ImVec2(0, 0), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ColorControls", 1, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -323,12 +382,17 @@ class ModelMatrixApp final : public Application
 
                     ImGui::EndTable();
                 }
-                ImGui::EndChild();
+                // ImGui::EndChild();
+                ImGui::End();
+            }
+        }
 
-
-                // Row 3: Grid drawing
-                ImGui::Text("DRAW CELLS");
-                ImGui::BeginChild("drawellsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
+        void DrawDrawSettingsWindow()
+        {
+            if (showDrawSettings)
+            {
+                ImGui::Begin("DRAW CELLS", &showDrawSettings);
+                // ImGui::BeginChild("drawellsContainer", ImVec2(0, 0), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("Drawcellstable", 2, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -354,12 +418,19 @@ class ModelMatrixApp final : public Application
                     ImGui::SameLine();
                     ImGui::DragInt3("##originDragger", originPoint);
                 }
-                ImGui::EndChild();
+                // ImGui::EndChild();
 
+                ImGui::End();
+            }
+        }
 
-                // Row 4: Viewport settings (resolution, bounding box color, background color - lighting (if we get there), multithreading toggle, grid size toggle
-                ImGui::Text("VIEWPORT SETTINGS");
-                ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
+        void DrawViewportSettingsWindow()
+        {
+            if (showViewportSettings)
+            {
+                ImGui::Begin("VIEWPORT SETTINGS", &showViewportSettings);
+
+                // ImGui::BeginChild("viewportSettingsContainer", ImVec2(0, 0), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("ViewportSettingsTable", 1, ImGuiTableFlags_NoSavedSettings)) {
                     ImGui::TableNextRow();
                     ImGui::TableNextColumn();
@@ -409,11 +480,18 @@ class ModelMatrixApp final : public Application
 
                     ImGui::EndTable();
                 }
-                ImGui::EndChild();
+                // ImGui::EndChild();
 
-                // Row 5: Simulation settings (speed, regression buffer, etc)
-                ImGui::Text("SIMULATION SETTINGS");
-                ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 120), ImGuiChildFlags_Border);
+                ImGui::End();
+            }
+        }
+
+        void DrawSimulationSettingsWindow()
+        {
+            if (showSimulationSettings)
+            {
+                ImGui::Begin("SIMULATION SETTINGS", &showSimulationSettings);
+                // ImGui::BeginChild("simulationSettingsContainer", ImVec2(0, 0), ImGuiChildFlags_Border);
                 if (ImGui::BeginTable("SimulationSettingsTable", 1, ImGuiTableFlags_NoSavedSettings))
                 {
                     ImGui::TableNextRow();
@@ -457,29 +535,12 @@ class ModelMatrixApp final : public Application
 
                     ImGui::EndTable();
                 }
-                ImGui::EndChild();
+                // ImGui::EndChild();
+
                 ImGui::End();
             }
         }
-        void DrawViewportWindow()
-        {
-            if (showViewport)
-            {
-                viewportWindow.Show();
 
-                if (windowInitState == 2)
-                {
-                    std::cout << "first frame! resizing viewport to fit." << std::endl;
-                    resolution[0] = viewportWindow.GetWindowSize().at(0)+40;
-                    resolution[1] = viewportWindow.GetWindowSize().at(1);
-                    viewportWindow.UpdateViewportResolution(resolution[0], resolution[1]);
-                    windowInitState = 3;
-                } else if (windowInitState < 2)
-                {
-                    windowInitState++;
-                }
-            }
-        }
         void ProcessKeyboardInput()
         {
             if (simulation->IsSimulationRunning())
