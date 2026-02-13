@@ -7,6 +7,8 @@
 #include <utility>
 #include <vector>
 
+#include "shaders.h"
+
 #include "raylib.h"
 #include "ruleset.h"
 #include "grid.h"
@@ -21,7 +23,17 @@ class Simulation
         Simulation(int simulationSpan, Ruleset ruleset, std::pmr::vector<Color> stateColors) :
             activeSimulationSpan(simulationSpan), activeRuleset(std::move(ruleset)),
             activeStateColors(std::move(stateColors)), activeGrid(simulationSpan, simulationSpan, simulationSpan),
-            tempGrid(activeGrid) {}
+            tempGrid(activeGrid)
+        {
+            // set up batch rendering on instantiation
+            cubeMesh = GenMeshCube(1.0f,1.0f,1.0f);
+            instanceMaterial = LoadMaterialDefault();
+            instanceShader = LoadShaderFromMemory(shaders::INSTANCING_VERTEX, shaders::INSTANCING_FRAGMENT);
+            instanceShader.locs[SHADER_LOC_MATRIX_MODEL] = GetShaderLocationAttrib(instanceShader, "instanceTransform");
+            instanceShader.locs[SHADER_LOC_MATRIX_MVP] = GetShaderLocation(instanceShader, "mvp");
+            instanceMaterial = LoadMaterialDefault();
+            instanceMaterial.shader = instanceShader;
+        }
         // public methods
         void ChangeRuleset(const std::string& newRuleset, NeighborCountingRule neighborCountingRule);
         void ChangeStateColors(const std::pmr::vector<Color>& newStateColors);
@@ -52,4 +64,9 @@ class Simulation
         unsigned int numThreads;
         bool drawWireframe = false;
         bool wrapGrid = false;
+        // member objects used in batch rendering
+        Mesh cubeMesh;
+        Material instanceMaterial;
+        Shader instanceShader;
+        std::vector<std::vector<Matrix>> stateBuffers;
 };
