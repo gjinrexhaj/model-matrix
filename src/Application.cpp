@@ -404,7 +404,7 @@ class ModelMatrixApp final : public Application
                     ImGui::DragFloat("##dragFloatForSparity", &rngSparsity, 0.01f, 0.0f, 10.0f);
                     ImGui::Text("Cube Radius  ");
                     ImGui::SameLine();
-                    ImGui::DragInt("##dragIntForRadius", &cubeRadius, 1, 0);
+                    ImGui::DragInt("##dragIntForRadius", &cubeRadius, 1, 0, ImGuiSliderFlags_ClampZeroRange);
                     ImGui::Text("Additive Fill");
                     ImGui::SameLine();
                     ImGui::Checkbox("##additiveFillToggle", &additiveFill);
