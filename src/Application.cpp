@@ -30,7 +30,7 @@ class ModelMatrixApp final : public Application
 
         // Create simulation members, initialize with default values
         Ruleset rs{"4/4,6/7", NeighborCountingRule::MOORE};
-        std::pmr::vector<Color> activeColors = {DARKPURPLE,VIOLET,BLUE,SKYBLUE,GREEN,GOLD,YELLOW};
+        std::pmr::vector<Color> activeColors = {DARKBLUE,BLUE,SKYBLUE,GREEN,YELLOW,ORANGE,RED};
         Simulation* simulation = new Simulation(100, rs, activeColors);
 
         // Fonts

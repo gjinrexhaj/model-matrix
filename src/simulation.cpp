@@ -88,7 +88,7 @@ inline int Simulation::CountLiveNeighbors(int x, int y, int z)
         deltaCount = 6;
     }
 
-    for (int i = 0; i < 26; ++i)
+    for (int i = 0; i < deltaCount; ++i)
     {
         int nx = x + deltas[i][0];
         int ny = y + deltas[i][1];
@@ -143,7 +143,9 @@ void Simulation::UpdateSimulationState()
 
     // determing number of threads
     numThreads = std::thread::hardware_concurrency();
-    if (numThreads == 0) numThreads = 4; // fallback
+    if (numThreads == 0) {
+        numThreads = 4; // fallback
+    }
 
 
 
