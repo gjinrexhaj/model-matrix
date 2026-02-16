@@ -14,7 +14,7 @@ Currently, this program is able to simulate any user-specified 3D CA ruleset wit
 
 GitHub serves as this project's primary platform for code, and collaboration.
 
-Here's a link to a short [video showcase](https://www.youtube.com/watch?v=wt_swtBArUk) on YT.
+Here's a link to a short [video showcase](https://www.youtube.com/watch?v=g0mdEIpUGcY) on YT.
 ![til](docs/gifs/chaotic.gif) chaotic.gif
 
 ![](docs/images/wireframe.png) wireframe.png
