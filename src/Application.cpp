@@ -52,6 +52,8 @@ class ModelMatrixApp final : public Application
             // Set INI path
 #if defined(__APPLE__)
             io.IniFilename = "/Users/Shared/model-matrix.ini";
+#elif defined(WIN32))
+            io.IniFilename = "model-matrix.ini"; // TODO: test this change on windows
 #endif
             // Start up viewport and simulation
             viewportWindow.Setup(*simulation, rs, activeColors);
@@ -60,17 +62,19 @@ class ModelMatrixApp final : public Application
 
             themes::load_ue();
 
+            float dpi = ImGui::GetWindowDpiScale();
+
             // load fonts from font headers
             interFont = io.Fonts->AddFontFromMemoryCompressedTTF(
                 InterRegular_compressed_data,
                 InterRegular_compressed_size,
-                14.0f
+                interFontSize * dpi
             );
 
             consoleFont = io.Fonts->AddFontFromMemoryCompressedTTF(
                 JetBrainsMono_compressed_data,
                 JetBrainsMono_compressed_size,
-                15.0f
+                consoleFontSize * dpi
             );
 
             io.FontDefault = interFont;
@@ -79,6 +83,8 @@ class ModelMatrixApp final : public Application
         // User interface code here
         void update() override
         {
+            PushFontChanges();
+
             // set up dockspace
             ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
 
@@ -107,13 +113,18 @@ class ModelMatrixApp final : public Application
             DrawDrawSettingsWindow();
             DrawViewportSettingsWindow();
             DrawSimulationSettingsWindow();
-
-
             DrawViewportWindow();
+
+
+            PopFontChanges();
         }
 
     // Every var in private represents state
     private:
+        // Font size
+        float interFontSize = 14.0f;
+        float consoleFontSize = 15.0f;
+
         // Window show flags
         bool showViewport = true;
         bool showSimStatus = true;
@@ -249,6 +260,7 @@ class ModelMatrixApp final : public Application
                 ImGui::Text(" RIGHT: advance");
                 ImGui::Text(" C: clear grid");
                 ImGui::Text(" R/T: randomize grid");
+                ImGui::Text(" +/-: adjust font size");
                 ImGui::Text("\n");
                 ImGui::Text("--- RULESET FORMATTING ---");
                 ImGui::Text("<survivalConditions>/<birthConditions>/<numStates>");
@@ -578,6 +590,30 @@ class ModelMatrixApp final : public Application
             {
                 simulation->ClearGrid();
             }
+            // Handle font scaling
+            if (IsKeyPressed(KEY_MINUS))
+            {
+                consoleFontSize--;
+                interFontSize--;
+            }
+
+            if (IsKeyPressed(KEY_EQUAL))
+            {
+                consoleFontSize++;
+                interFontSize++;
+            }
+        }
+
+        void PushFontChanges()
+        {
+            ImGui::PushFont(consoleFont, consoleFontSize);
+            ImGui::PushFont(interFont, interFontSize);
+        }
+
+        void PopFontChanges()
+        {
+            ImGui::PopFont();
+            ImGui::PopFont();
         }
 };
 
