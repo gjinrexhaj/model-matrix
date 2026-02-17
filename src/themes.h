@@ -458,7 +458,7 @@ namespace themes
 		style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f);
 	}
 
-	inline void load_ue()
+	inline void load_ue_dark()
 	{
 		ImVec4* colors = ImGui::GetStyle().Colors;
 		colors[ImGuiCol_Text]                   = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);

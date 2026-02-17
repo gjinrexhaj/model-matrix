@@ -60,7 +60,7 @@ class ModelMatrixApp final : public Application
             newColors.reserve(simulation->GetStateColors().size());
             simulation->RandomizeSimulationState(rngSparsity, cubeRadius, additiveFill, originPoint);
 
-            themes::load_ue();
+            themes::load_ue_dark();
 
             float dpi = ImGui::GetWindowDpiScale();
 
@@ -121,6 +121,9 @@ class ModelMatrixApp final : public Application
 
     // Every var in private represents state
     private:
+        // general flags
+        bool isDarkMode = true;
+
         // Font size
         float interFontSize = 14.0f;
         float consoleFontSize = 15.0f;
@@ -204,7 +207,6 @@ class ModelMatrixApp final : public Application
                 {
                     showSimulationSettings = !showSimulationSettings;
                 }
-
                 ImGui::EndMenu();
             }
             if (ImGui::MenuItem("Status"))
@@ -214,6 +216,18 @@ class ModelMatrixApp final : public Application
             if (ImGui::MenuItem("Guide"))
             {
                 showUsageGuide = !showUsageGuide;
+            }
+            if (ImGui::MenuItem("UI Theme"))
+            {
+                isDarkMode = !isDarkMode;
+
+                if (isDarkMode)
+                {
+                    themes::load_ue_dark();
+                } else
+                {
+                    ImGui::StyleColorsLight();
+                }
             }
             if (ImGui::MenuItem("About"))
             {
@@ -228,14 +242,27 @@ class ModelMatrixApp final : public Application
                 ImGui::Begin("Status", &showSimStatus);
                 ImGui::PushFont(consoleFont);
 
+                ImVec4 green;
+                ImVec4 yellow;
+
+                if (isDarkMode)
+                {
+                    green = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
+                    yellow = ImVec4(1.0f, 1.0f, 0.0f, 1.0f);
+                } else
+                {
+                    green = ImVec4(0.0f, 0.5f, 0.0f, 1.0f);
+                    yellow = ImVec4(0.75f, 0.75f, 0.0f, 1.0f);
+                }
+
                 if (isAdvancing)
                 {
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ENGINE ADVANCING");
+                    ImGui::TextColored(yellow, "ENGINE ADVANCING");
                     ImGui::Text("FPS: %d / %d", GetFPS(), advancementSpeed);
                 } else {
                     if (simulation->IsSimulationRunning())
                     {
-                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "ENGINE RUNNING");
+                        ImGui::TextColored(green, "ENGINE RUNNING");
                     } else
                     {
                         ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 1.0f), "ENGINE IDLE");
