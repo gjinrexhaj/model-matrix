@@ -272,6 +272,7 @@ class ModelMatrixApp final : public Application
                 ImGui::Text("OpenGL %i", rlGetVersion());
                 ImGui::Text("Raylib %i.%i", RAYLIB_VERSION_MAJOR, RAYLIB_VERSION_MINOR);
                 ImGui::Text("Threads: %i", simulation->getNumThreads());
+                ImGui::Text("Font Size: %.0f", interFontSize);
                 ImGui::PopFont();
                 ImGui::End();
             }
