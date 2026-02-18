@@ -123,6 +123,7 @@ class ModelMatrixApp final : public Application
     private:
         // general flags
         bool isDarkMode = true;
+        char uiThemeLabel[CHAR_BUFFER_SIZE] = "Light Mode";
 
         // Font size
         float interFontSize = 14.0f;
@@ -217,16 +218,19 @@ class ModelMatrixApp final : public Application
             {
                 showUsageGuide = !showUsageGuide;
             }
-            if (ImGui::MenuItem("UI Theme"))
+
+            if (ImGui::MenuItem(uiThemeLabel))
             {
                 isDarkMode = !isDarkMode;
 
                 if (isDarkMode)
                 {
                     themes::load_ue_dark();
+                    strcpy(uiThemeLabel, "Light Mode");
                 } else
                 {
                     ImGui::StyleColorsLight();
+                    strcpy(uiThemeLabel, "Dark Mode");
                 }
             }
             if (ImGui::MenuItem("About"))
