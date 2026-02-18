@@ -53,7 +53,7 @@ class ModelMatrixApp final : public Application
 #if defined(__APPLE__)
             io.IniFilename = "/Users/Shared/model-matrix.ini";
 #elif defined(WIN32)
-            io.IniFilename = "model-matrix.ini"; // TODO: test this change on windows
+            io.IniFilename = "model-matrix.ini";
 #endif
             // Start up viewport and simulation
             viewportWindow.Setup(*simulation, rs, activeColors);
