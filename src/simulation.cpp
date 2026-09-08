@@ -96,11 +96,15 @@ inline int Simulation::CountLiveNeighbors(int x, int y, int z)
 
         if (wrapGrid)  // wrap around edges
         {
-            // modulo-based wrapping
-            nx = (nx + w) % w;
-            ny = (ny + h) % h;
-            nz = (nz + d) % d;
-            count += (activeGrid.read(nx, ny, nz) == maxState);
+            // optimized wrapping: replace modulo with conditional subtractions
+            // nx ∈ [-1, w] after nx = x + delta, so at most 2 ifs needed
+            if (nx < 0) nx += w;
+            if (nx >= w) nx -= w;
+            if (ny < 0) ny += h;
+            if (ny >= h) ny -= h;
+            if (nz < 0) nz += d;
+            if (nz >= d) nz -= d;
+            count += (activeGrid.getData()[activeGrid.getFlatIndex(nx, ny, nz)] == maxState);
         }
         else  // hard boundaries
         {
@@ -108,7 +112,7 @@ inline int Simulation::CountLiveNeighbors(int x, int y, int z)
                 (unsigned)ny < (unsigned)h &&
                 (unsigned)nz < (unsigned)d)
             {
-                count += (activeGrid.read(nx, ny, nz) == maxState);
+                count += (activeGrid.getData()[activeGrid.getFlatIndex(nx, ny, nz)] == maxState);
             }
         }
     }
